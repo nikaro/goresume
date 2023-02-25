@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   push:
@@ -6,7 +6,22 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          cache: true
+          check-latest: true
+          go-version-file: go.mod
+      - uses: golangci/golangci-lint-action@v3
 
   build:
     name: Build
