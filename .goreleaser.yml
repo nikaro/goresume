@@ -1,0 +1,61 @@
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+
+changelog:
+  filters:
+    exclude:
+      - '^docs'
+      - '^test'
+      - "^ci"
+      - "^typo"
+
+aurs:
+  - name: "goreleaser-bin"
+    homepage: "https://github.con/nikaro/goresume"
+    description: "Build HTML/PDF resume from JSON/YAML/TOML."
+    maintainers:
+      - "Nicolas Karolak <nicolas at karolak dot fr>"
+    license: "MIT"
+    private_key: "{{ .Env.AUR_KEY }}"
+    git_url: "ssh://aur@aur.archlinux.org/goresume-bin.git"
+    conflicts:
+      - "goresume"
+      - "goresume-bin"
+      - "goresume-git"
+    package: |-
+      install -Dm755 -t "${pkgdir}/usr/bin/" "./goresume"
+
+brews:
+  - name: "goresume"
+    homepage: "https://github.con/nikaro/goresume"
+    description: "Build HTML/PDF resume from JSON/YAML/TOML."
+    license: "MIT"
+    tap:
+      owner: "nikaro"
+      name: "homebrew-tap"
+      token: "{{ .Env.GH_PAT }}"
+    folder: "Formula"
+    install: |-
+      bin.install "goresume"
+      generate_completions_from_executable(bin/"goresume", "completion")
+    test: |-
+      system "#{bin}/goresume", "init"
+
+nfpms:
+  - package_name: "goresume"
+    homepage: "https://github.con/nikaro/goresume"
+    description: "Build HTML/PDF resume from JSON/YAML/TOML."
+    maintainer: "Nicolas Karolak <nicolas@karolak.fr>"
+    license: "MIT"
+    formats:
+      - "apk"
+      - "deb"
+      - "rpm"
