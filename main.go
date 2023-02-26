@@ -5,12 +5,12 @@ import (
 	"embed"
 	"errors"
 	"io/fs"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 
+	"github.com/charmbracelet/log"
 	"github.com/gomarkdown/markdown"
 	"github.com/kataras/i18n"
 	"github.com/playwright-community/playwright-go"
@@ -31,6 +31,7 @@ var defaultLocales embed.FS
 var exportToHtml bool
 var exportToPdf bool
 var lang string
+var logLevel string
 var outputHtml string
 var outputPdf string
 var resume Resume
@@ -61,6 +62,9 @@ var exportCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(validateCmd)
+	rootCmd.PersistentFlags().StringVarP(
+		&logLevel, "log-level", "l", "warn", "logging level",
+	)
 	validateCmd.PersistentFlags().StringVar(
 		&resumePath, "resume", "resume.json", "path to the resume",
 	)
@@ -106,6 +110,24 @@ func main() {
 }
 
 func root(_ *cobra.Command, _ []string) {
+	log.SetLevel(func() (l log.Level) {
+		switch logLevel {
+		case "fatal":
+			l = log.FatalLevel
+		case "error":
+			l = log.ErrorLevel
+		case "warn":
+			l = log.WarnLevel
+		case "info":
+			l = log.InfoLevel
+		case "debug":
+			l = log.DebugLevel
+		default:
+			log.Fatal("unknown loglevel", "level", logLevel)
+		}
+		return l
+	}())
+
 	viper.AddConfigPath(".")
 	viper.SetConfigName(resumePath)
 	resumePathSplit := strings.Split(resumePath, ".")
@@ -141,10 +163,12 @@ func export(_ *cobra.Command, _ []string) {
 	themePath := filepath.Join(themeBasePath, viper.GetString("meta.theme")+".html")
 	themeTemplate := func() string {
 		if _, err := os.Stat(themePath); !errors.Is(err, fs.ErrNotExist) {
+			log.Info("using local theme", "theme", themePath)
 			template, errTemplate := os.ReadFile(themePath)
 			check(errTemplate)
 			return string(template)
 		} else {
+			log.Info("using embed theme", "theme", themePath)
 			template, errTemplate := defaultTemplates.ReadFile(themePath)
 			check(errTemplate)
 			return string(template)
