@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -20,7 +21,7 @@ import (
 
 var defaultSchema string = "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json"
 
-//go:embed themes/*/index.html
+//go:embed themes/*.html
 var defaultTemplates embed.FS
 
 //go:embed locales/*.yml
@@ -35,7 +36,7 @@ var resume Resume
 var resumePath string
 var schemaPath string
 var themeName string
-var themeParentPath string
+var themeBasePath string
 var version string
 
 var rootCmd = &cobra.Command{
@@ -88,7 +89,7 @@ func init() {
 		&themeName, "theme", "", "override template theme",
 	)
 	exportCmd.PersistentFlags().StringVar(
-		&themeParentPath, "theme-path", "themes", "directory to search for themes",
+		&themeBasePath, "theme-path", "themes", "directory to search for themes",
 	)
 }
 
@@ -136,7 +137,7 @@ func validate(_ *cobra.Command, _ []string) {
 }
 
 func export(_ *cobra.Command, _ []string) {
-	themePath := themeParentPath + "/" + viper.GetString("meta.theme") + "/index.html"
+	themePath := filepath.Join(themeBasePath, viper.GetString("meta.theme")+".html")
 	themeTemplate := func() string {
 		if _, err := os.Stat(themePath); os.IsExist(err) {
 			template, errTemplate := os.ReadFile(themePath)
@@ -148,10 +149,10 @@ func export(_ *cobra.Command, _ []string) {
 			return string(template)
 		}
 	}()
-	templates, errTemplate := template.New("index.html").Funcs(templatesFn).Parse(themeTemplate)
+	templates, errTemplate := template.New("html").Funcs(templatesFn).Parse(themeTemplate)
 	check(errTemplate)
 	buf := bytes.NewBuffer([]byte{})
-	errOutput := templates.ExecuteTemplate(buf, "index.html", resume)
+	errOutput := templates.Execute(buf, resume)
 	check(errOutput)
 
 	if exportToPdf {
