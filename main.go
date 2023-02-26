@@ -10,6 +10,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/Masterminds/sprig/v3"
 	"github.com/charmbracelet/log"
 	"github.com/gomarkdown/markdown"
 	"github.com/kataras/i18n"
@@ -174,7 +175,10 @@ func export(_ *cobra.Command, _ []string) {
 			return string(template)
 		}
 	}()
-	templates, errTemplate := template.New("html").Funcs(templatesFn).Parse(themeTemplate)
+	templates, errTemplate := template.New("html").
+		Funcs(sprig.FuncMap()).
+		Funcs(templatesFn).
+		Parse(themeTemplate)
 	check(errTemplate)
 	buf := bytes.NewBuffer([]byte{})
 	errOutput := templates.Execute(buf, resume)
@@ -233,14 +237,8 @@ var templatesFn template.FuncMap = template.FuncMap{
 		check(errLocale)
 		return locale.Tr(viper.GetString("meta.lang"), s)
 	},
-	"join": func(sep string, s ...string) string {
-		return strings.Join(s, sep)
-	},
 	"md": func(s string) string {
 		return string(markdown.ToHTML([]byte(s), nil, nil))
-	},
-	"trimPrefix": func(s string, prefix string) string {
-		return strings.TrimPrefix(s, prefix)
 	},
 }
 

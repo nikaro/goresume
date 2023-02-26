@@ -81,7 +81,9 @@ type Meta struct {
 	Canonical    string `json:"canonical,omitempty"`
 	Version      string `json:"version,omitempty"`
 	LastModified string `json:"lastModified,omitempty"`
-	Lang         string `json:"lang,omitempty"` // custom
+	// custom
+	Lang      string            `json:"lang,omitempty"`
+	Downloads map[string]string `json:"downloads,omitempty"`
 }
 
 type Project struct {
@@ -136,5 +138,4 @@ type Work struct {
 	EndDate     string   `json:"endDate,omitempty"`
 	Summary     string   `json:"summary,omitempty"`
 	Highlights  []string `json:"highlights,omitempty"`
-	Keywords    []string `json:"keywords,omitempty"` // custom
 }
