@@ -233,7 +233,7 @@ var templatesFn template.FuncMap = template.FuncMap{
 		check(errLocale)
 		return locale.Tr(viper.GetString("meta.lang"), s)
 	},
-	"join": func(sep string, s []string) string {
+	"join": func(sep string, s ...string) string {
 		return strings.Join(s, sep)
 	},
 	"md": func(s string) string {
