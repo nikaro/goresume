@@ -36,7 +36,7 @@ var version string
 var rootCmd = &cobra.Command{
 	Use:              "goresume",
 	Version:          version,
-	Short:            "JSON Resume Builder",
+	Short:            "Resume Builder",
 	PersistentPreRun: root,
 }
 
@@ -48,7 +48,7 @@ var validateCmd = &cobra.Command{
 
 var exportCmd = &cobra.Command{
 	Use:   "export",
-	Short: "Export resume",
+	Short: "Export resume to HTML/PDF",
 	Run:   export,
 }
 
@@ -145,12 +145,12 @@ func getTemplate(theme string) *bytes.Buffer {
 	themePath := filepath.Join("themes", theme+".html")
 	themeTemplate := func() string {
 		if _, err := os.Stat(themePath); !errors.Is(err, fs.ErrNotExist) {
-			log.Info("export", "source", "local", "theme", themePath)
+			log.Info("export", "from", "local", "theme", themePath)
 			template, errTemplate := os.ReadFile(themePath)
 			check(errTemplate)
 			return string(template)
 		} else {
-			log.Info("export", "source", "embed", "theme", themePath)
+			log.Info("export", "from", "embed", "theme", themePath)
 			template, errTemplate := defaultTemplates.ReadFile(themePath)
 			check(errTemplate)
 			return string(template)
