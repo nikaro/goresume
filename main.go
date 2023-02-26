@@ -56,8 +56,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(
 		&logLevel, "log-level", "l", "warn", "logging level",
 	)
-	rootCmd.PersistentFlags().StringVar(
-		&resume, "resume", "resume.json", "path to the resume",
+	rootCmd.PersistentFlags().StringVarP(
+		&resume, "resume", "r", "resume.json", "path to the resume",
 	)
 	rootCmd.AddCommand(validateCmd)
 	validateCmd.PersistentFlags().String(
