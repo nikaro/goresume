@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="{{ or .Meta.Lang "en" }}">
 	<head>
 	  <meta charset="utf-8">
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +16,7 @@
 			<img src="{{ .Basics.Image }}" alt="profile picture" width="160">
 			{{- end }}
 			<h2>{{ .Basics.Label }}</h2>
-			<a href="https://maps.apple.com/?q={{ .Basics.Location.City }}, {{ .Basics.Location.CountryCode }}"><button>{{ .Basics.Location.City }}, {{ .Basics.Location.CountryCode }}</button></a>
+			<a href="https://maps.apple.com/?q={{ .Basics.Location.City }}, {{ .Basics.Location.Region }}, {{ .Basics.Location.CountryCode }}"><button>{{ .Basics.Location.City }}, {{ .Basics.Location.CountryCode }}</button></a>
 			<a href="mailto:{{ .Basics.Email }}"><button>{{ .Basics.Email }}</button></a>
 			<a href="tel:{{ .Basics.Phone }}"><button>{{ .Basics.Phone }}</button></a>
 			{{- range .Basics.Profiles }}

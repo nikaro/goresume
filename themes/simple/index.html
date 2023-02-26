@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="{{ or .Meta.Lang "en" }}">
+	<head>
+	  <meta charset="utf-8">
+	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="{{ .Basics.Name }}">
+		<meta name="description" content="{{ .Basics.Name }} - {{ .Basics.Label }}">
+		<title>{{ .Basics.Name }}</title>
+	  <link rel="icon" href="data:,">
+		<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+	</head>
+	<body>
+		<header>
+			<h1>{{ .Basics.Name }}</h1>
+			{{- if .Basics.Image }}
+			<img src="{{ .Basics.Image }}" alt="profile picture" width="160">
+			{{- end }}
+			<h2>{{ .Basics.Label }}</h2>
+			<a href="https://maps.apple.com/?q={{ .Basics.Location.City }}, {{ .Basics.Location.Region }}, {{ .Basics.Location.CountryCode }}"><button>{{ .Basics.Location.City }}, {{ .Basics.Location.CountryCode }}</button></a>
+			<a href="mailto:{{ .Basics.Email }}"><button>{{ .Basics.Email }}</button></a>
+			<a href="tel:{{ .Basics.Phone }}"><button>{{ .Basics.Phone }}</button></a>
+			{{- range .Basics.Profiles }}
+			<a href="{{ .Url }}" title="{{ .Network }} - {{ .Username }}"><button>{{ .Network }}</button></a>
+			{{- end }}
+		</header>
+		<main>
+			{{- if .Basics.Summary }}
+			{{ .Basics.Summary | md }}
+			{{- end }}
+			{{- if .Work }}
+			<section>
+				<h3>{{ tr "work" }}</h3>
+				{{- range .Work }}
+				<article>
+					<h4>{{ .Position }}</h4>
+					<p><a href="{{ .Url }}" title="{{ .Description }}">{{ .Name }}</a>, {{ .Location }} | {{ .StartDate }} – {{ or .EndDate (tr "today") }}</p>
+					<p>{{ .Summary }}</p>
+					{{- if .Highlights }}
+					<p>
+						<summary>{{ tr "highlights" }}</summary>
+						<ul>
+							{{- range .Highlights }}
+							<li>{{ . }}</li>
+							{{- end }}
+						</ul>
+					</p>
+					{{- end }}
+					{{- if .Keywords }}
+					<p>
+						{{- range .Keywords }}
+						<button title="{{ tr "keywords" }}" disabled>{{ . }}</button>
+						{{- end }}
+					</p>
+					{{- end }}
+				</article>
+				{{- end }}
+			</section>
+			{{- end }}
+			{{- if .Education }}
+			<section>
+				<h3>{{ tr "education" }}</h3>
+				{{- range .Education }}
+				<article>
+					<h4>{{ .StudyType }}, {{ .Area }}</h4>
+					<p><a href="{{ .Url }}" title="{{ .Institution }}">{{ .Institution }}</a> | {{ .StartDate }} – {{ or .EndDate (tr "today") }}</p>
+					{{- if .Score }}
+					<p>{{ tr "score" }}: {{ .Score }}</p>
+					{{- end }}
+					{{- if .Courses }}
+					<p>
+						<summary>{{ tr "courses" }}</summary>
+						<ul>
+							{{- range .Courses }}
+							<li>{{ . }}</li>
+							{{- end }}
+						</ul>
+					</p>
+					{{- end }}
+				</article>
+				{{- end }}
+			</section>
+			{{- end }}
+			{{- if .Projects }}
+			<section>
+				<h3>{{ tr "projects" }}</h3>
+				{{- range .Projects }}
+				<article>
+					<h4 title={{ .Type }}>{{ .Name }}</h4>
+					<p><a href="{{ .Url }}" title="{{ .Entity }}">{{ .Entity }}</a> | {{ .StartDate }} – {{ or .EndDate (tr "today") }}</p>
+					{{- if .Description }}
+					<p>{{ .Description }}</p>
+					{{- end }}
+					{{- if .Highlights }}
+					<p>
+						<summary>{{ tr "highlights" }}</summary>
+						<ul>
+							{{- range .Highlights }}
+							<li>{{ . }}</li>
+							{{- end }}
+						</ul>
+					</p>
+					{{- end }}
+					{{- if or .Keywords .Roles }}
+					<p>
+						{{- range .Roles }}
+						<button title="{{ tr "roles" }}">{{ . }}</button>
+						{{- end }}
+						{{- range .Keywords }}
+						<button title="{{ tr "keywords" }}" disabled>{{ . }}</button>
+						{{- end }}
+					</p>
+					{{- end }}
+				</article>
+				{{- end }}
+			</section>
+			{{- end }}
+			{{- if .Volunteer }}
+			<section>
+				<h3>{{ tr "volunteer" }}</h3>
+				{{- range .Volunteer }}
+				<article>
+					<h4>{{ .Position }}</h4>
+					<p><a href="{{ .Url }}" title="{{ .Organization }}">{{ .Organization }}</a> | {{ .StartDate }} – {{ or .EndDate (tr "today") }}</p>
+					{{- if .Summary }}
+					<p>{{ .Summary }}</p>
+					{{- end }}
+					{{- if .Highlights }}
+					<p>
+						<summary>{{ tr "highlights" }}</summary>
+						<ul>
+							{{- range .Highlights }}
+							<li>{{ . }}</li>
+							{{- end }}
+						</ul>
+					</p>
+					{{- end }}
+				</article>
+				{{- end }}
+			</section>
+			{{- end }}
+			{{- if .Certificates }}
+			<section>
+				<h3>{{ tr "certificates" }}</h3>
+				{{- range .Certificates }}
+				<article>
+					<h4>{{ .Name }}</h4>
+					<p>{{ .Issuer }} – <a href="{{ .Url }}" title="{{ .Issuer }}">{{ .Url }}</a> | {{ .Date }}</p>
+				</article>
+				{{- end }}
+			</section>
+			{{- end }}
+			{{- if .Awards }}
+			<section>
+				<h3>{{ tr "awards" }}</h3>
+				{{- range .Awards }}
+				<article>
+					<h4>{{ .Title }}, {{ .Awarder }}</h4>
+					<p>{{ .Date }}</p>
+					<p>{{ .Summary }}</p>
+				</article>
+				{{- end }}
+			</section>
+			{{- end }}
+			{{- if .Publications }}
+			<section>
+				<h3>{{ tr "publications" }}</h3>
+				{{- range .Publications }}
+				<article>
+					<h4>{{ .Name }}</h4>
+					<p><a href="{{ .Url }}" title="{{ .Name }}">{{ .Publisher }}</a> | {{ .ReleaseDate }}</p>
+					<p>{{ .Summary }}</p>
+				</article>
+				{{- end }}
+			</section>
+			{{- end }}
+			{{- if .Languages }}
+			<section>
+				<h3>{{ tr "languages" }}</h3>
+				<ul>
+					{{- range .Languages }}
+					<li>{{ .Language }}: {{ .Fluency }}</li>
+					{{- end }}
+				</ul>
+			</section>
+			{{- end }}
+			{{- if .Skills }}
+			<section>
+				<h3>{{ tr "skills" }}</h3>
+				{{- range .Skills }}
+				<article>
+					<summary>{{ .Name }}</summary>
+					<p>{{ tr "level" }}: {{ .Level }}</p>
+					{{- if .Keywords }}
+					<ul>
+						{{- range .Keywords }}
+						<li>{{ . }}</li>
+						{{- end }}
+					</ul>
+					{{- end }}
+				</article>
+				{{- end }}
+			</section>
+			{{- end }}
+			{{- if .Interests }}
+			<section>
+				<h3>{{ tr "interests" }}</h3>
+				{{- range .Interests }}
+				<p>
+					<summary>{{ .Name }}</summary>
+					{{- if .Keywords }}
+					<ul>
+						{{- range .Keywords }}
+						<li>{{ . }}</li>
+						{{- end }}
+					</ul>
+					{{- end }}
+				</p>
+				{{- end }}
+			</section>
+			{{- end }}
+		</main>
+		<footer>
+			<p>{{ tr "generated_by" }} <a href="https://github.com/nikaro/goresume" title="JSON Resume Builder">GoResume</a></p>
+		</footer>
+	</body>
+</html>

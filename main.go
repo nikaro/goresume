@@ -20,8 +20,8 @@ import (
 
 var defaultSchema string = "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json"
 
-//go:embed themes/_default
-var defaultTemplate embed.FS
+//go:embed themes/*/index.html
+var defaultTemplates embed.FS
 
 //go:embed locales/*.yml
 var defaultLocales embed.FS
@@ -58,10 +58,10 @@ var exportCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(
+	rootCmd.AddCommand(validateCmd)
+	validateCmd.PersistentFlags().StringVar(
 		&resumePath, "resume", "resume.json", "path to the resume",
 	)
-	rootCmd.AddCommand(validateCmd)
 	validateCmd.PersistentFlags().StringVar(
 		&schemaPath, "schema", "", "override schema, can be a path or an url",
 	)
@@ -80,6 +80,9 @@ func init() {
 	)
 	exportCmd.PersistentFlags().StringVar(
 		&outputPdf, "pdf-output", "resume.pdf", "pdf file output",
+	)
+	exportCmd.PersistentFlags().StringVar(
+		&resumePath, "resume", "resume.json", "path to the resume",
 	)
 	exportCmd.PersistentFlags().StringVar(
 		&themeName, "theme", "", "override template theme",
@@ -111,7 +114,7 @@ func root(_ *cobra.Command, _ []string) {
 	errBindSchema := viper.BindPFlag("$schema", validateCmd.PersistentFlags().Lookup("schema"))
 	check(errBindSchema)
 
-	viper.SetDefault("meta.theme", "_default")
+	viper.SetDefault("meta.theme", "simple")
 	errBindTheme := viper.BindPFlag("meta.theme", exportCmd.PersistentFlags().Lookup("theme"))
 	check(errBindTheme)
 
@@ -133,15 +136,19 @@ func validate(_ *cobra.Command, _ []string) {
 }
 
 func export(_ *cobra.Command, _ []string) {
-	themePath := themeParentPath + "/" + viper.GetString("meta.theme")
-	themeFs := func() fs.FS {
-		if viper.GetString("meta.theme") != "_default" {
-			return os.DirFS(themePath)
+	themePath := themeParentPath + "/" + viper.GetString("meta.theme") + "/index.html"
+	themeTemplate := func() string {
+		if _, err := os.Stat(themePath); os.IsExist(err) {
+			template, errTemplate := os.ReadFile(themePath)
+			check(errTemplate)
+			return string(template)
 		} else {
-			return defaultTemplate
+			template, errTemplate := defaultTemplates.ReadFile(themePath)
+			check(errTemplate)
+			return string(template)
 		}
-	}
-	templates, errTemplate := template.New("index.html").Funcs(templatesFn).ParseFS(themeFs(), themePath+"/*.html")
+	}()
+	templates, errTemplate := template.New("index.html").Funcs(templatesFn).Parse(themeTemplate)
 	check(errTemplate)
 	buf := bytes.NewBuffer([]byte{})
 	errOutput := templates.ExecuteTemplate(buf, "index.html", resume)
@@ -180,18 +187,18 @@ func export(_ *cobra.Command, _ []string) {
 	}
 }
 
-// https://github.com/kataras/i18n/issues/2
 var templatesFn template.FuncMap = template.FuncMap{
 	"tr": func(s string) string {
+		// https://github.com/kataras/i18n/issues/2
 		assets := i18n.Assets(
 			func() (filenames []string) {
-				//nolint:errcheck
-				fs.WalkDir(defaultLocales, ".", func(path string, d fs.DirEntry, err error) error {
+				errWalk := fs.WalkDir(defaultLocales, ".", func(path string, d fs.DirEntry, err error) error {
 					if err == nil && !d.IsDir() {
 						filenames = append(filenames, path)
 					}
 					return err
 				})
+				check(errWalk)
 				return filenames
 			},
 			defaultLocales.ReadFile,
@@ -200,11 +207,14 @@ var templatesFn template.FuncMap = template.FuncMap{
 		check(errLocale)
 		return locale.Tr(viper.GetString("meta.lang"), s)
 	},
-	"jn": func(sep string, s []string) string {
+	"join": func(sep string, s []string) string {
 		return strings.Join(s, sep)
 	},
 	"md": func(s string) string {
 		return string(markdown.ToHTML([]byte(s), nil, nil))
+	},
+	"trimPrefix": func(s string, prefix string) string {
+		return strings.TrimPrefix(s, prefix)
 	},
 }
 

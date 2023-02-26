@@ -81,6 +81,7 @@ type Meta struct {
 	Canonical    string `json:"canonical,omitempty"`
 	Version      string `json:"version,omitempty"`
 	LastModified string `json:"lastModified,omitempty"`
+	Lang         string `json:"lang,omitempty"` // custom
 }
 
 type Project struct {
@@ -135,5 +136,5 @@ type Work struct {
 	EndDate     string   `json:"endDate,omitempty"`
 	Summary     string   `json:"summary,omitempty"`
 	Highlights  []string `json:"highlights,omitempty"`
-	Keywords    []string `json:"keywords,omitempty"`
+	Keywords    []string `json:"keywords,omitempty"` // custom
 }
