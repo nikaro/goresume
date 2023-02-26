@@ -29,17 +29,8 @@ var defaultTemplates embed.FS
 //go:embed locales/*.yml
 var defaultLocales embed.FS
 
-var exportToHtml bool
-var exportToPdf bool
-var lang string
 var logLevel string
-var outputHtml string
-var outputPdf string
-var resume Resume
-var resumePath string
-var schemaPath string
-var themeName string
-var themeBasePath string
+var resume string
 var version string
 
 var rootCmd = &cobra.Command{
@@ -62,40 +53,37 @@ var exportCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(validateCmd)
 	rootCmd.PersistentFlags().StringVarP(
 		&logLevel, "log-level", "l", "warn", "logging level",
 	)
-	validateCmd.PersistentFlags().StringVar(
-		&resumePath, "resume", "resume.json", "path to the resume",
+	rootCmd.PersistentFlags().StringVar(
+		&resume, "resume", "resume.json", "path to the resume",
 	)
-	validateCmd.PersistentFlags().StringVar(
-		&schemaPath, "schema", "", "override schema, can be a path or an url",
+	rootCmd.AddCommand(validateCmd)
+	validateCmd.PersistentFlags().String(
+		"schema", defaultSchema, "override schema, can be a path or an url",
 	)
 	rootCmd.AddCommand(exportCmd)
-	exportCmd.PersistentFlags().StringVar(
-		&lang, "lang", "", "override language for templates",
+	exportCmd.PersistentFlags().String(
+		"lang", "en", "language for templates",
 	)
-	exportCmd.PersistentFlags().BoolVar(
-		&exportToHtml, "html", true, "export to html",
+	exportCmd.PersistentFlags().Bool(
+		"html", true, "export to html",
 	)
-	exportCmd.PersistentFlags().StringVar(
-		&outputHtml, "html-output", "resume.html", "html file output",
+	exportCmd.PersistentFlags().String(
+		"html-output", "resume.html", "html output file",
 	)
-	exportCmd.PersistentFlags().BoolVar(
-		&exportToPdf, "pdf", true, "export to pdf",
+	exportCmd.PersistentFlags().String(
+		"html-theme", "simple", "html template theme",
 	)
-	exportCmd.PersistentFlags().StringVar(
-		&outputPdf, "pdf-output", "resume.pdf", "pdf file output",
+	exportCmd.PersistentFlags().Bool(
+		"pdf", true, "export to pdf",
 	)
-	exportCmd.PersistentFlags().StringVar(
-		&resumePath, "resume", "resume.json", "path to the resume",
+	exportCmd.PersistentFlags().String(
+		"pdf-output", "resume.pdf", "pdf output file",
 	)
-	exportCmd.PersistentFlags().StringVar(
-		&themeName, "theme", "", "override template theme",
-	)
-	exportCmd.PersistentFlags().StringVar(
-		&themeBasePath, "theme-path", "themes", "directory to search for themes",
+	exportCmd.PersistentFlags().String(
+		"pdf-theme", "simple", "pdf template theme",
 	)
 }
 
@@ -130,46 +118,39 @@ func root(_ *cobra.Command, _ []string) {
 	}())
 
 	viper.AddConfigPath(".")
-	viper.SetConfigName(resumePath)
-	resumePathSplit := strings.Split(resumePath, ".")
+	viper.SetConfigName(resume)
+	resumePathSplit := strings.Split(resume, ".")
 	ext := resumePathSplit[len(resumePathSplit)-1]
 	viper.SetConfigType(ext)
 
-	viper.SetDefault("$schema", defaultSchema)
-	errBindSchema := viper.BindPFlag("$schema", validateCmd.PersistentFlags().Lookup("schema"))
-	check(errBindSchema)
-
-	viper.SetDefault("meta.theme", "simple")
-	errBindTheme := viper.BindPFlag("meta.theme", exportCmd.PersistentFlags().Lookup("theme"))
-	check(errBindTheme)
-
-	viper.SetDefault("meta.lang", "en")
-	errBindLang := viper.BindPFlag("meta.lang", exportCmd.PersistentFlags().Lookup("lang"))
-	check(errBindLang)
-
-	errViper := viper.ReadInConfig()
-	check(errViper)
-	errUnmarshal := viper.Unmarshal(&resume)
-	check(errUnmarshal)
+	check(viper.BindPFlag("$schema", validateCmd.PersistentFlags().Lookup("schema")))
+	check(viper.BindPFlag("meta.lang", exportCmd.PersistentFlags().Lookup("lang")))
+	check(viper.BindPFlag("meta.html", exportCmd.PersistentFlags().Lookup("html")))
+	check(viper.BindPFlag("meta.html-output", exportCmd.PersistentFlags().Lookup("html-output")))
+	check(viper.BindPFlag("meta.html-theme", exportCmd.PersistentFlags().Lookup("html-theme")))
+	check(viper.BindPFlag("meta.pdf", exportCmd.PersistentFlags().Lookup("pdf")))
+	check(viper.BindPFlag("meta.pdf-output", exportCmd.PersistentFlags().Lookup("pdf-output")))
+	check(viper.BindPFlag("meta.pdf-theme", exportCmd.PersistentFlags().Lookup("pdf-theme")))
+	check(viper.ReadInConfig())
+	log.Debug("dump", "resume", viper.AllSettings())
 }
 
 func validate(_ *cobra.Command, _ []string) {
 	jsonSchema, errLoadSchema := jsonschema.Compile(viper.GetString("$schema"))
 	check(errLoadSchema)
-	errValidate := jsonSchema.Validate(viper.AllSettings())
-	check(errValidate)
+	check(jsonSchema.Validate(viper.AllSettings()))
 }
 
-func export(_ *cobra.Command, _ []string) {
-	themePath := filepath.Join(themeBasePath, viper.GetString("meta.theme")+".html")
+func getTemplate(theme string) *bytes.Buffer {
+	themePath := filepath.Join("themes", theme+".html")
 	themeTemplate := func() string {
 		if _, err := os.Stat(themePath); !errors.Is(err, fs.ErrNotExist) {
-			log.Info("using local theme", "theme", themePath)
+			log.Info("export", "source", "local", "theme", themePath)
 			template, errTemplate := os.ReadFile(themePath)
 			check(errTemplate)
 			return string(template)
 		} else {
-			log.Info("using embed theme", "theme", themePath)
+			log.Info("export", "source", "embed", "theme", themePath)
 			template, errTemplate := defaultTemplates.ReadFile(themePath)
 			check(errTemplate)
 			return string(template)
@@ -181,14 +162,19 @@ func export(_ *cobra.Command, _ []string) {
 		Parse(themeTemplate)
 	check(errTemplate)
 	buf := bytes.NewBuffer([]byte{})
-	errOutput := templates.Execute(buf, resume)
+	errOutput := templates.Execute(buf, viper.AllSettings())
 	check(errOutput)
+	return buf
+}
 
-	if exportToPdf {
+func export(_ *cobra.Command, _ []string) {
+	if viper.GetBool("meta.pdf") {
+		buf := getTemplate(viper.GetString("meta.pdf-theme"))
 		errInstall := playwright.Install(&playwright.RunOptions{Browsers: []string{"chromium"}})
 		check(errInstall)
-		output, errOutput := setOutputFile(outputPdf)
+		output, errOutput := setOutputFile(viper.GetString("meta.pdf-output"))
 		check(errOutput)
+		log.Info("export", "to", output.Name())
 		defer output.Close()
 		pw, errRun := playwright.Run()
 		check(errRun)
@@ -208,9 +194,11 @@ func export(_ *cobra.Command, _ []string) {
 		check(pw.Stop())
 	}
 
-	if exportToHtml {
-		output, errOutput := setOutputFile(outputHtml)
+	if viper.GetBool("meta.html") {
+		buf := getTemplate(viper.GetString("meta.html-theme"))
+		output, errOutput := setOutputFile(viper.GetString("meta.html-output"))
 		check(errOutput)
+		log.Info("export", "to", output.Name())
 		defer output.Close()
 		_, errWrite := buf.WriteTo(output)
 		check(errWrite)

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <!--
     Author: David Carvajal
     Source: https://github.com/davcd/jsonresume-theme-actual
 -->
-<html lang="{{ .Meta.Lang | default "en" }}">
+<html lang='{{ .meta.lang | default "en" }}'>
 
 <head>
   <meta charset="utf-8">
@@ -438,7 +438,7 @@
       font-style: italic;
     }
   </style>
-  <title>{{ .Basics.Name }} – {{ .Basics.Label }}</title>
+  <title>{{ .basics.name }} – {{ .basics.label }}</title>
 </head>
 
 <body>
@@ -446,51 +446,51 @@
     <div class="basics">
       <div class="table padding-container-2">
         <div class="main">
-          <span class="name">{{ .Basics.Name }}</span>
-          <span class="label">{{ .Basics.Label }}</span>
+          <span class="name">{{ .basics.name }}</span>
+          <span class="label">{{ .basics.label }}</span>
         </div>
         <div class="side">
           <ul class="contact">
-            <li>{{ .Basics.Phone }}</li>
-            <li>{{ .Basics.Email }}</li>
-            <li class="margin-text-5">{{ .Basics.Location.City }}, {{ .Basics.Location.Region }}, {{
-              .Basics.Location.CountryCode }}</li>
+            <li>{{ .basics.phone }}</li>
+            <li>{{ .basics.email }}</li>
+            <li class="margin-text-5">{{ .basics.location.city }}, {{ .basics.location.region }}, {{
+              .basics.location.countrycode }}</li>
           </ul>
         </div>
       </div>
       <div class="summary markdown padding-container-2">
-        {{ .Basics.Summary | md }}
+        {{ .basics.summary | md }}
       </div>
     </div>
     <div class="table">
       <div class="main">
-        {{- if .Work }}
-        <div class="work margin-container-4">
+        {{- if .work }}
+        <div class="work margin-container-3">
           <p class="section-title no-alone-2">{{ "work" | tr }}</p>
           <div class="container">
-            {{- range .Work }}
+            {{- range .work }}
             <div class="article margin-container-3">
               <div class="header no-alone-1">
                 <div class="table">
                   <div class="left">
-                    <span class="title">{{ .Position }}</span>
+                    <span class="title">{{ .position }}</span>
                     <span class="subtitle margin-text-1">
-                      <a href="{{ .Url }}">{{ .Name }}</a> · {{ .Location }}
+                      <a href="{{ .url }}">{{ .name }}</a> · {{ .location }}
                     </span>
                   </div>
                   <div class="right">
-                    <span class="date">{{ .StartDate }} – {{ .EndDate | default ("today" | tr) }}</span>
+                    <span class="date">{{ .startdate }} – {{ .enddate | default ("today" | tr) }}</span>
                   </div>
                 </div>
               </div>
-              {{- if .Summary }}
+              {{- if .summary }}
               <div class="summary markdown margin-text-4">
-                {{ .Summary | md }}
+                {{ .summary | md }}
               </div>
               {{- end }}
-              {{- if .Highlights }}
+              {{- if .highlights }}
               <ul class="highlights margin-text-4 no-break">
-                {{- range .Highlights }}
+                {{- range .highlights }}
                 <li>{{ . }}</li>
                 {{- end }}
               </ul>
@@ -500,31 +500,31 @@
           </div>
         </div>
         {{- end }}
-        {{- if .Projects }}
-        <div class="projects margin-container-4">
+        {{- if .projects }}
+        <div class="projects margin-container-3">
           <p class="section-title no-alone-2">{{ "projects" | tr }}</p>
           <div class="container">
-            {{- range .Projects }}
+            {{- range .projects }}
             <div class="article margin-container-3">
               <div class="header no-alone-1">
                 <div class="table">
                   <div class="left">
-                    <span class="title">{{ join ", " .Roles }}</span>
+                    <span class="title">{{ join ", " .roles }}</span>
                     <span class="subtitle margin-text-1">
-                      <a href="{{ .Url }}">{{ .Name }}</a>
+                      <a href="{{ .url }}">{{ .name }}</a>
                     </span>
                   </div>
                   <div class="right">
-                    <span class="date">{{ .StartDate }} – {{ .EndDate | default (tr "today") }}</span>
+                    <span class="date">{{ .startdate }} – {{ .enddate | default (tr "today") }}</span>
                   </div>
                 </div>
               </div>
               <div class="summary markdown margin-text-4">
-                {{ .Description | md }}
+                {{ .description | md }}
               </div>
-              {{- if .Highlights }}
+              {{- if .highlights }}
               <ul class="highlights margin-text-4 no-break">
-                {{- range .Highlights }}
+                {{- range .highlights }}
                 <li>{{ . }}</li>
                 {{- end }}
               </ul>
@@ -534,54 +534,54 @@
           </div>
         </div>
         {{- end }}
-        {{- if .Publications }}
-        <div class="publications margin-container-4">
+        {{- if .publications }}
+        <div class="publications margin-container-3">
           <p class="section-title no-alone-2">{{ "publications" | tr }}</p>
           <div class="container">
-            {{- range .Publications }}
+            {{- range .publications }}
             <div class="article margin-container-3">
               <div class="header no-alone-1">
                 <div class="table">
                   <div class="left">
                     <span class="title">
-                      <a href="{{ .Url }}">{{ .Name }}</a>
+                      <a href="{{ .url }}">{{ .name }}</a>
                     </span>
-                    <span class="subtitle margin-text-1">{{ .Publisher }}</span>
+                    <span class="subtitle margin-text-1">{{ .publisher }}</span>
                   </div>
                   <div class="right">
-                    <span class="date">{{ .ReleaseDate }}</span>
+                    <span class="date">{{ .releasedate }}</span>
                   </div>
                 </div>
               </div>
               <div class="summary markdown margin-text-4">
-                {{ .Summary | md }}
+                {{ .summary | md }}
               </div>
             </div>
             {{- end }}
           </div>
         </div>
         {{- end }}
-        {{- if .Volunteer }}
-        <div class="volunteer margin-container-4">
+        {{- if .volunteer }}
+        <div class="volunteer margin-container-3">
           <p class="section-title no-alone-2">{{ "volunteer" | tr }}</p>
           <div class="container">
-            {{- range .Volunteer }}
+            {{- range .volunteer }}
             <div class="article margin-container-3">
               <div class="header no-alone-1">
                 <div class="table">
                   <div class="left">
-                    <span class="title">{{ .Position }}</span>
+                    <span class="title">{{ .position }}</span>
                     <span class="subtitle margin-text-1">
-                      <a href="{{ .Url }}">{{ .Organization }}</a>
+                      <a href="{{ .url }}">{{ .organization }}</a>
                     </span>
                   </div>
                   <div class="right">
-                    <span class="date">{{ .StartDate }} – {{ .EndDate | default (tr "today") }}</span>
+                    <span class="date">{{ .startdate }} – {{ .enddate | default (tr "today") }}</span>
                   </div>
                 </div>
               </div>
               <div class="summary markdown margin-text-4">
-                {{ .Summary | md }}
+                {{ .summary | md }}
               </div>
             </div>
             {{- end }}
@@ -590,16 +590,16 @@
         {{- end }}
       </div>
       <div class="side">
-        {{- if .Skills }}
-        <div class="skills margin-container-4">
+        {{- if .skills }}
+        <div class="skills margin-container-3">
           <p class="section-title no-alone-1">{{ "skills" | tr }}</p>
           <div class="container">
-            {{- range .Skills }}
+            {{- range .skills }}
             <div class="article no-break">
-              <span>{{ .Name }}</span>
-              {{- if .Keywords }}
+              <span>{{ .name }}</span>
+              {{- if .keywords }}
               <ul class="margin-text-2">
-                {{- range .Keywords }}
+                {{- range .keywords }}
                 <li>{{ . }}</li>
                 {{- end }}
               </ul>
@@ -609,93 +609,93 @@
           </div>
         </div>
         {{- end }}
-        {{- if .Education }}
-        <div class="education margin-container-4">
+        {{- if .education }}
+        <div class="education margin-container-3">
           <p class="section-title no-alone-1">{{ "education" | tr }}</p>
           <div class="container">
-            {{- range .Education }}
+            {{- range .education }}
             <div class="article margin-container-2 no-break">
               <div class="title markdown">
-                {{ list .StudyType .Area | join ", " | md }}
+                {{ list .studytype .area | join ", " | md }}
               </div>
               <span class="institution margin-text-2">
-                <a href="{{ .Url }}">{{ .Institution }}</a>
+                <a href="{{ .url }}">{{ .institution }}</a>
               </span>
             </div>
             {{- end }}
           </div>
         </div>
         {{- end }}
-        {{- if .Certificates }}
-        <div class="certificates margin-container-4">
+        {{- if .certificates }}
+        <div class="certificates margin-container-3">
           <p class="section-title no-alone-1">{{ "certificates" | tr }}</p>
           <div class="container">
-            {{- range .Certificates }}
+            {{- range .certificates }}
             <div class="article margin-container-2 no-break">
               <div class="name markdown">
-                <a href="{{ .Url }}">{{ .Name }}</a>
+                <a href="{{ .url }}">{{ .name }}</a>
               </div>
               <span class="issuer margin-text-2">
-                <a href="{{ .Url }}">{{ .Issue }}</a>
+                <a href="{{ .url }}">{{ .issue }}</a>
               </span>
             </div>
             {{- end }}
           </div>
         </div>
         {{- end }}
-        {{- if .Awards }}
-        <div class="awards margin-container-4">
+        {{- if .awards }}
+        <div class="awards margin-container-3">
           <p class="section-title no-alone-1">{{ "awards" | tr }}</p>
           <div class="container">
-            {{- range .Awards }}
+            {{- range .awards }}
             <div class="article margin-container-2 no-break">
               <div class="header">
-                <span class="title">{{ .Title }}</span>
-                <span class="awarder margin-text-2">{{ .Awarder }}</span>
+                <span class="title">{{ .title }}</span>
+                <span class="awarder margin-text-2">{{ .awarder }}</span>
               </div>
               <div class="summary markdown margin-text-3">
-                {{ .Summary | md }}
+                {{ .summary | md }}
               </div>
             </div>
             {{- end }}
           </div>
         </div>
         {{- end }}
-        {{- if .References }}
-        <div class="references margin-container-4">
+        {{- if .references }}
+        <div class="references margin-container-3">
           <p class="section-title no-alone-2">{{ "references" | tr }}</p>
           <div class="container">
-            {{- range .References }}
+            {{- range .references }}
             <div class="article margin-container-2 no-break">
-              <span class="name">{{ .Name }}</span>
-              <q class="margin-text-2">{{ .Reference }}</q>
+              <span class="name">{{ .name }}</span>
+              <q class="margin-text-2">{{ .reference }}</q>
             </div>
             {{- end }}
           </div>
         </div>
         {{- end }}
-        {{- if .Languages }}
-        <div class="languages margin-container-4 no-break">
+        {{- if .languages }}
+        <div class="languages margin-container-3 no-break">
           <p class="section-title no-alone-1">{{ "languages" | tr }}</p>
           <div class="container">
             <ul>
-              {{- range .Languages }}
-              <li class="article margin-text-2">{{ .Language }} · {{ .Fluency }}</li>
+              {{- range .languages }}
+              <li class="article margin-text-2">{{ .language }} · {{ .fluency }}</li>
               {{- end }}
             </ul>
           </div>
         </div>
         {{- end }}
-        {{- if .Interests }}
-        <div class="interests margin-container-4">
+        {{- if .interests }}
+        <div class="interests margin-container-3">
           <p class="section-title no-alone-1">{{ "interests" | tr }}</p>
           <div class="container">
-            {{- range .Interests }}
+            {{- range .interests }}
             <div class="article no-break">
-              <span>{{ .Name }}</span>
-              {{- if .Keywords }}
+              <span>{{ .name }}</span>
+              {{- if .keywords }}
               <ul class="margin-text-2">
-                {{- range .Keywords }}
+                {{- range .keywords }}
                 <li>{{ . }}</li>
                 {{- end }}
               </ul>
@@ -705,22 +705,22 @@
           </div>
         </div>
         {{- end }}
-        {{- if .Basics.Profiles }}
-        <div class="links margin-container-4 no-break">
+        {{- if .basics.profiles }}
+        <div class="links margin-container-3 no-break">
           <p class="section-title no-alone-1">{{ "profiles" | tr }}</p>
           <div class="container">
             <ul>
-              {{- if .Basics.Url }}
+              {{- if .basics.url }}
               <li class="article">
-                <a href="{{ .Basics.Url }}">
-                  {{ .Basics.Url | trimPrefix "https://" }}
+                <a href="{{ .basics.url }}">
+                  {{ .basics.url | trimPrefix "https://" }}
                 </a>
               </li>
               {{- end }}
-              {{- range .Basics.Profiles }}
+              {{- range .basics.profiles }}
               <li class="article margin-text-4">
-                <a href="{{ .Url }}">
-                  {{ .Url | trimPrefix "https://" }}
+                <a href="{{ .url }}">
+                  {{ .url | trimPrefix "https://" }}
                 </a>
               </li>
               {{- end }}

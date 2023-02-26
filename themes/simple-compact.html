@@ -11,7 +11,7 @@
 	<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
 	<style>
 		aside {
-			font-size: 70%;
+			font-size: 68%;
 			text-align: center;
 		}
 	</style>
@@ -41,9 +41,11 @@
 		<section>
 			<h3>{{ tr "work" }}</h3>
 			{{- range .work }}
-			<article>
-				<h5>{{ .position }} @ <a href="{{ .url }}" title="{{ .description }}">{{ .name }}</a> • {{ .location }}</h5>
-				<aside> {{ .startdate }} • {{ .enddate | default (tr "today" ) }}</aside>
+			<details>
+				<summary>
+					{{ .position }} @ <a href="{{ .url }}" title="{{ .description }}">{{ .name }}</a> • {{ .location }}
+				</summary>
+				<aside>{{ .startdate }} → {{ .enddate | default (tr "today" ) }}</aside>
 				{{- if .summary }}
 				{{ .summary | md }}
 				{{- end }}
@@ -51,7 +53,7 @@
 				<h6>{{ tr "highlights" }}</h6>
 				<p>{{ .highlights | join " • "}}</p>
 				{{- end }}
-			</article>
+			</details>
 			{{- end }}
 		</section>
 		{{- end }}
@@ -59,9 +61,11 @@
 		<section>
 			<h3>{{ tr "education" }}</h3>
 			{{- range .education }}
-			<article>
-				<h5>{{ .studytype }}, {{ .area }} @ <a href="{{ .url }}" title="{{ .institution }}">{{ .institution }}</a></h5>
-				<aside>{{ .startdate }} • {{ .enddate | default (tr "today") }}</aside>
+			<details>
+				<summary>
+					{{ .studytype }}, {{ .area }} @ <a href="{{ .url }}" title="{{ .institution }}">{{ .institution }}</a>
+				</summary>
+				<aside>{{ .startdate }} → {{ .enddate | default (tr "today") }}</aside>
 				{{- if .score }}
 				<p>{{ tr "score" }}: {{ .score }}</p>
 				{{- end }}
@@ -69,7 +73,7 @@
 				<h6>{{ tr "courses" }}</h6>
 				<p>{{ .courses | join " • "}}</p>
 				{{- end }}
-			</article>
+			</details>
 			{{- end }}
 		</section>
 		{{- end }}
@@ -77,9 +81,9 @@
 		<section>
 			<h3>{{ tr "projects" }}</h3>
 			{{- range .projects }}
-			<article>
-				<h5 title={{ .type }}>{{ .name }} @ <a href="{{ .url }}" title="{{ .entity }}">{{ .entity }}</a></h5>
-				<aside>{{ .startdate }} • {{ .enddate | default (tr "today") }}</aside>
+			<details>
+				<summary title={{ .type }}>{{ .name }} @ <a href="{{ .url }}" title="{{ .entity }}">{{ .entity }}</a></summary>
+				<aside>{{ .startdate }} → {{ .enddate | default (tr "today") }}</aside>
 				{{- if .roles }}
 				<p><b>{{ tr "roles" }}</b>: {{ .roles | join ", " }}</p>
 				{{- end }}
@@ -97,7 +101,7 @@
 					{{- end }}
 				</p>
 				{{- end }}
-			</article>
+			</details>
 			{{- end }}
 		</section>
 		{{- end }}
@@ -105,9 +109,9 @@
 		<section>
 			<h3>{{ tr "volunteer" }}</h3>
 			{{- range .volunteer }}
-			<article>
-				<h5>{{ .position }} @ <a href="{{ .url }}" title="{{ .organization }}">{{ .organization }}</a></h5>
-				<aside>{{ .startdate }} • {{ .enddate | default (tr "today") }}</aside>
+			<details>
+				<summary>{{ .position }} @ <a href="{{ .url }}" title="{{ .organization }}">{{ .organization }}</a></summary>
+				<aside>{{ .startdate }} → {{ .enddate | default (tr "today") }}</aside>
 				{{- if .summary }}
 				{{ .summary | md }}
 				{{- end }}
@@ -115,7 +119,7 @@
 				<h6>{{ tr "highlights" }}</h6>
 				<p>{{ .highlights | join " • " }}</p>
 				{{- end }}
-			</article>
+			</details>
 			{{- end }}
 		</section>
 		{{- end }}
@@ -123,10 +127,10 @@
 		<section>
 			<h3>{{ tr "certificates" }}</h3>
 			{{- range .certificates }}
-			<article>
-				<h5>{{ .name }} @ <a href="{{ .url }}" title="{{ .issuer }}">{{ .issuer }}</a></h5>
+			<details>
+				<summary>{{ .name }} @ <a href="{{ .url }}" title="{{ .issuer }}">{{ .issuer }}</a></summary>
 				<p>{{ .date }}</p>
-			</article>
+			</details>
 			{{- end }}
 		</section>
 		{{- end }}
@@ -134,13 +138,13 @@
 		<section>
 			<h3>{{ tr "awards" }}</h3>
 			{{- range .awards }}
-			<article>
-				<h5>{{ .title }} @ {{ .awarder }}</h5>
+			<details>
+				<summary>{{ .title }} @ {{ .awarder }}</summary>
 				<aside>{{ .date }}</aside>
 				{{- if .summary }}
 				{{ .summary | md }}
 				{{- end }}
-			</article>
+			</details>
 			{{- end }}
 		</section>
 		{{- end }}
@@ -148,13 +152,13 @@
 		<section>
 			<h3>{{ tr "publications" }}</h3>
 			{{- range .publications }}
-			<article>
-				<h5>{{ .name }} @ <a href="{{ .url }}" title="{{ .name }}">{{ .publisher }}</a></h5>
+			<details>
+				<summary>{{ .name }} @ <a href="{{ .url }}" title="{{ .name }}">{{ .publisher }}</a></summary>
 				<aside>{{ .releasedate }}</aside>
 				{{- if .summary }}
 				{{ .summary | md }}
 				{{- end }}
-			</article>
+			</details>
 			{{- end }}
 		</section>
 		{{- end }}
