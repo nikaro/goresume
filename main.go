@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"embed"
+	"errors"
 	"io/fs"
 	"log"
 	"os"
@@ -139,7 +140,7 @@ func validate(_ *cobra.Command, _ []string) {
 func export(_ *cobra.Command, _ []string) {
 	themePath := filepath.Join(themeBasePath, viper.GetString("meta.theme")+".html")
 	themeTemplate := func() string {
-		if _, err := os.Stat(themePath); os.IsExist(err) {
+		if _, err := os.Stat(themePath); !errors.Is(err, fs.ErrNotExist) {
 			template, errTemplate := os.ReadFile(themePath)
 			check(errTemplate)
 			return string(template)
