@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ or .Meta.Lang " en" }}">
+<html lang="{{ .Meta.Lang | default "en" }}">
 
 <head>
 	<meta charset="utf-8">
