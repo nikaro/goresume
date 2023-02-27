@@ -15,6 +15,7 @@ import (
 	"github.com/gomarkdown/markdown"
 	"github.com/kataras/i18n"
 	"github.com/playwright-community/playwright-go"
+	"github.com/samber/lo"
 	"github.com/santhosh-tekuri/jsonschema/v5"
 	_ "github.com/santhosh-tekuri/jsonschema/v5/httploader"
 	"github.com/spf13/cobra"
@@ -131,8 +132,11 @@ func root(_ *cobra.Command, _ []string) {
 	check(viper.BindPFlag("meta.pdf", exportCmd.PersistentFlags().Lookup("pdf")))
 	check(viper.BindPFlag("meta.pdf-output", exportCmd.PersistentFlags().Lookup("pdf-output")))
 	check(viper.BindPFlag("meta.pdf-theme", exportCmd.PersistentFlags().Lookup("pdf-theme")))
-	check(viper.ReadInConfig())
-	log.Debug("dump", "resume", viper.AllSettings())
+
+	if lo.None([]string{"completion", "init", "man", "-h", "--help", "help"}, os.Args) {
+		check(viper.ReadInConfig())
+		log.Debug("dump", "resume", viper.AllSettings())
+	}
 }
 
 func validate(_ *cobra.Command, _ []string) {

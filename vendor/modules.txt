@@ -109,6 +109,9 @@ github.com/playwright-community/playwright-go
 # github.com/rivo/uniseg v0.4.4
 ## explicit; go 1.18
 github.com/rivo/uniseg
+# github.com/samber/lo v1.37.0
+## explicit; go 1.18
+github.com/samber/lo
 # github.com/santhosh-tekuri/jsonschema/v5 v5.2.0
 ## explicit; go 1.15
 github.com/santhosh-tekuri/jsonschema/v5
@@ -153,6 +156,9 @@ golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/scrypt
+# golang.org/x/exp v0.0.0-20230224173230-c95f2b4c22f2
+## explicit; go 1.18
+golang.org/x/exp/constraints
 # golang.org/x/net v0.7.0
 ## explicit; go 1.17
 golang.org/x/net/publicsuffix

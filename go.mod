@@ -8,6 +8,7 @@ require (
 	github.com/gomarkdown/markdown v0.0.0-20221013030248-663e2500819c
 	github.com/kataras/i18n v0.0.6
 	github.com/playwright-community/playwright-go v0.2000.1
+	github.com/samber/lo v1.37.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.2.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
@@ -46,6 +47,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.2 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
+	golang.org/x/exp v0.0.0-20230224173230-c95f2b4c22f2 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
