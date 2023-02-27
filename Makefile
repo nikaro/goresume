@@ -80,7 +80,7 @@ docs: ## Generate doc page
 	pandoc README.md --output=docs/index.html --css=https://cdn.simplecss.org/simple.min.css --metadata=title=${APP}  --standalone
 	go run . export --resume docs/resume.json --html-output=docs/simple.html --pdf=false
 	go run . export --resume docs/resume.json --html-theme=simple-compact --html-output=docs/simple-compact.html --pdf=false
-	go run . export --resume docs/resume.json --html-theme=actual --html-output=docs/actual.html --pdf-theme=actual --pdf-output=docs/resume.pdf
+	go run . export --resume docs/resume.json --html-theme=actual --html-output=docs/actual.html --pdf-theme=actual --pdf-output=docs/actual.pdf
 
 .PHONY: clean
 clean: ## Cleans the binary
