@@ -5,6 +5,7 @@ import (
 	"embed"
 	"errors"
 	"io/fs"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -247,6 +248,9 @@ var templatesFn template.FuncMap = template.FuncMap{
 	},
 	"md": func(s string) string {
 		return string(markdown.ToHTML([]byte(s), nil, nil))
+	},
+	"urlencode": func(s string) string {
+		return url.QueryEscape(s)
 	},
 }
 

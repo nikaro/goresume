@@ -25,12 +25,23 @@
 		{{- end }}
 		<h2>{{ .basics.label }}</h2>
 		{{- $location := printf "%s, %s, %s" .basics.location.city .basics.location.region .basics.location.countrycode }}
-		<a href="https://maps.apple.com/?q={{ $location }}"><button>{{ $location }}</button></a>
-		<a href="mailto:{{ .basics.email }}"><button>{{ .basics.email }}</button></a>
-		<a href="tel:{{ .basics.phone }}"><button>{{ .basics.phone }}</button></a>
-		<a href="{{ .basics.url }}" title="{{ .basics.name }}"><button>{{ tr "website" }}</button></a>
+		<button onclick="location.href='https://maps.apple.com/?q={{ $location | urlencode }}'"
+			title="https://maps.apple.com/?q={{ $location }}" type="button">
+			{{ $location }}
+		</button>
+		<button onclick="location.href='mailto:{{ .basics.email }}'" title="mailto:{{ .basics.email }}" type="button">
+			{{ .basics.email }}
+		</button>
+		<button onclick="location.href='tel:{{ .basics.phone }}'" title="tel:{{ .basics.phone }}" type="button">
+			{{ .basics.phone }}
+		</button>
+		<button onclick="location.href='{{ .basics.url }}'" title="{{ .basics.url }}" type="button">
+			{{ tr "website" }}
+		</button>
 		{{- range .basics.profiles }}
-		<a href="{{ .url }}" title="{{ .network }} - {{ .username }}"><button>{{ .network }}</button></a>
+		<button onclick="location.href='{{ .url }}'" title="{{ .url }}" type="button">
+			{{ .network }}
+		</button>
 		{{- end }}
 	</header>
 	<main>
