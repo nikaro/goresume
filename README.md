@@ -50,10 +50,10 @@ goresume export --html-output -
 
 goresume comes with a few embeded themes:
 
-* simple: [HTML](https://goresume.github.io/simple.html)
-* simple-compact: [HTML](https://goresume.github.io/simple-compact.html)
-* actual: [HTML](https://goresume.github.io/actual.html) •
-  [PDF](https://goresume.github.io/actual.pdf)
+* simple: [HTML](https://nikaro.github.io/goresume/simple.html)
+* simple-compact: [HTML](https://nikaro.github.io/goresume/simple-compact.html)
+* actual: [HTML](https://nikaro.github.io/goresume/actual.html) •
+  [PDF](https://nikaro.github.io/goresume/actual.pdf)
 
 ### Custom
 

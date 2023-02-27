@@ -6,6 +6,8 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  pages: write
 
 jobs:
 
@@ -26,3 +28,25 @@ jobs:
       - uses: goreleaser/goreleaser-action@v4
         with:
           args: release --clean
+
+  page:
+    name: Page
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/configure-pages@v3
+      - uses: actions/setup-go@v3
+        with:
+          cache: true
+          check-latest: true
+          go-version-file: go.mod
+      - run: ansible -b -m apt -a deb=https://github.com/jgm/pandoc/releases/download/3.1/pandoc-3.1-1-amd64.deb localhost
+      - run: make docs
+      - uses: actions/upload-pages-artifact@v1
+        with:
+          path: docs/
+      - uses: actions/deploy-pages@v1
+        id: deploy
