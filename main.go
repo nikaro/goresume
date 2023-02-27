@@ -145,12 +145,12 @@ func getTemplate(theme string) *bytes.Buffer {
 	themePath := filepath.Join("themes", theme+".html")
 	themeTemplate := func() string {
 		if _, err := os.Stat(themePath); !errors.Is(err, fs.ErrNotExist) {
-			log.Info("export", "from", "local", "theme", themePath)
+			log.Debug("export", "from", "local", "theme", themePath)
 			template, errTemplate := os.ReadFile(themePath)
 			check(errTemplate)
 			return string(template)
 		} else {
-			log.Info("export", "from", "embed", "theme", themePath)
+			log.Debug("export", "from", "embed", "theme", themePath)
 			template, errTemplate := defaultTemplates.ReadFile(themePath)
 			check(errTemplate)
 			return string(template)
@@ -205,23 +205,39 @@ func export(_ *cobra.Command, _ []string) {
 	}
 }
 
+var i18nAssets i18n.Loader
 var templatesFn template.FuncMap = template.FuncMap{
 	"tr": func(s string) string {
 		// https://github.com/kataras/i18n/issues/2
-		assets := i18n.Assets(
-			func() (filenames []string) {
-				errWalk := fs.WalkDir(defaultLocales, ".", func(path string, d fs.DirEntry, err error) error {
-					if err == nil && !d.IsDir() {
-						filenames = append(filenames, path)
-					}
-					return err
-				})
-				check(errWalk)
-				return filenames
-			},
-			defaultLocales.ReadFile,
-		)
-		locale, errLocale := i18n.New(assets, viper.GetString("meta.lang"))
+		var locales fs.FS
+		var localesSrc string
+		if _, err := os.Stat("locales"); !errors.Is(err, fs.ErrNotExist) {
+			locales, _ = fs.Sub(os.DirFS("."), "locales")
+			localesSrc = "local"
+		} else {
+			locales = defaultLocales
+			localesSrc = "embed"
+		}
+		if i18nAssets == nil {
+			i18nAssets = i18n.Assets(
+				func() (filenames []string) {
+					errWalk := fs.WalkDir(locales, ".", func(path string, d fs.DirEntry, err error) error {
+						if err == nil && !d.IsDir() {
+							if localesSrc == "local" {
+								path = filepath.Join("locales", path)
+							}
+							filenames = append(filenames, path)
+						}
+						return err
+					})
+					check(errWalk)
+					log.Debug("locales", "from", localesSrc, "files", filenames)
+					return filenames
+				},
+				defaultLocales.ReadFile,
+			)
+		}
+		locale, errLocale := i18n.New(i18nAssets, viper.GetString("meta.lang"))
 		check(errLocale)
 		return locale.Tr(viper.GetString("meta.lang"), s)
 	},
