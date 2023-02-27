@@ -14,8 +14,8 @@ dist/
 *.out
 
 # Artifacts
-/*.toml
-/*.yaml
-/*.json
-/*.pdf
-/*.html
+/resume.toml
+/resume.yaml
+/resume.json
+*.pdf
+*.html

@@ -23,11 +23,6 @@ build: ## Build for the current target
 	@echo "Building..."
 	env CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -mod vendor -ldflags="-s -w -X 'main.version=${VERSION}'" -o build/${APP}-${GOOS}-${GOARCH} .
 
-.PHONY: man
-man: ## Build manpage
-	@echo "Building manpages..."
-	build/${APP}-${GOOS}-${GOARCH} man
-
 .PHONY: completion
 completion: ## Build completions
 	@echo "Building completions..."
@@ -40,8 +35,6 @@ install: ## Install the application
 	@echo "Installing..."
 	install -d ${BINDIR}
 	install -m 755 build/${APP}-${GOOS}-${GOARCH} ${BINDIR}/${APP}
-	install -d ${MANDIR}/man1
-	install -m 644 $(wildcard man/${APP}*.1) ${MANDIR}/man1/
 	install -d ${SHAREDIR}/bash-completion/completions
 	install -m 644 completions/${APP} ${SHAREDIR}/bash-completion/completions/${APP}
 	install -d ${SHAREDIR}/fish/vendor_completions.d
@@ -59,8 +52,6 @@ uninstall: ## Uninstall the application
 	rm -f ${SHAREDIR}/zsh/site-functions/_${APP}
 	-rmdir ${BINDIR}
 	-rmdir ${SHAREDIR}
-	-rmdir ${MANDIR}/man1
-	-rmdir ${MANDIR}
 	-rmdir ${SHAREDIR}/bash-completion/completions
 	-rmdir ${SHAREDIR}/bash-completion
 	-rmdir ${SHAREDIR}/fish/vendor_completions.d
@@ -83,14 +74,19 @@ test: ## Runs go test
 	@echo "Testing..."
 	go test ./...
 
-.PHONY: run
-run: ## Runs go run
-	go run -race ${APP}.go
+.PHONY: docs
+docs: ## Generate doc page
+	@echo "Generating..."
+	pandoc README.md --output=docs/index.html --css=https://cdn.simplecss.org/simple.min.css --metadata=title=${APP}  --standalone
+	go run . export --resume docs/resume.json --html-output=docs/simple.html --pdf=false
+	go run . export --resume docs/resume.json --html-theme=simple-compact --html-output=docs/simple-compact.html --pdf=false
+	go run . export --resume docs/resume.json --html-theme=actual --html-output=docs/actual.html --pdf-theme=actual --pdf-output=docs/resume.pdf
 
 .PHONY: clean
 clean: ## Cleans the binary
 	@echo "Cleaning..."
 	@rm -rf build/
+	@rm -rf dist/
 	@rm -f *.html
 	@rm -f *.pdf
 
