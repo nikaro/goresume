@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
@@ -24,13 +25,13 @@ var _ Logger = &logger{}
 
 // logger is a logger that implements Logger.
 type logger struct {
-	w         io.Writer
-	b         bytes.Buffer
-	mu        *sync.RWMutex
-	isDiscard atomic.Bool
-	aLevel    atomic.Int32
+	w  io.Writer
+	b  bytes.Buffer
+	mu *sync.RWMutex
 
-	level        Level
+	isDiscard uint32
+
+	level        int32
 	prefix       string
 	timeFunc     TimeFunction
 	timeFormat   string
@@ -51,7 +52,7 @@ func New(opts ...LoggerOption) Logger {
 	l := &logger{
 		b:     bytes.Buffer{},
 		mu:    &sync.RWMutex{},
-		level: InfoLevel,
+		level: int32(InfoLevel),
 	}
 
 	for _, opt := range opts {
@@ -63,7 +64,7 @@ func New(opts ...LoggerOption) Logger {
 	}
 
 	l.SetOutput(l.w)
-	l.SetLevel(l.level)
+	l.SetLevel(Level(l.level))
 
 	if l.timeFunc == nil {
 		l.timeFunc = time.Now
@@ -77,12 +78,12 @@ func New(opts ...LoggerOption) Logger {
 }
 
 func (l *logger) log(level Level, msg interface{}, keyvals ...interface{}) {
-	if l.isDiscard.Load() {
+	if atomic.LoadUint32(&l.isDiscard) != 0 {
 		return
 	}
 
 	// check if the level is allowed
-	if l.aLevel.Load() > int32(level) {
+	if atomic.LoadInt32(&l.level) > int32(level) {
 		return
 	}
 
@@ -223,15 +224,14 @@ func (l *logger) SetReportCaller(report bool) {
 func (l *logger) GetLevel() Level {
 	l.mu.RLock()
 	defer l.mu.RUnlock()
-	return l.level
+	return Level(l.level)
 }
 
 // SetLevel sets the current level.
 func (l *logger) SetLevel(level Level) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	l.level = level
-	l.aLevel.Store(int32(level))
+	atomic.StoreInt32(&l.level, int32(level))
 }
 
 // GetPrefix returns the current prefix.
@@ -267,7 +267,11 @@ func (l *logger) SetOutput(w io.Writer) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.w = w
-	l.isDiscard.Store(w == io.Discard)
+	var isDiscard uint32 = 0
+	if w == ioutil.Discard {
+		isDiscard = 1
+	}
+	atomic.StoreUint32(&l.isDiscard, isDiscard)
 	if !isTerminal(w) {
 		// This only affects the TextFormatter
 		l.noStyles = true
