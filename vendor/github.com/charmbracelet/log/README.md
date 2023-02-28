@@ -1,17 +1,25 @@
 # Log
 
 <p>
-  <img src="https://user-images.githubusercontent.com/25087/219742757-c8afe0d9-608a-4845-a555-ef59c0af9ebc.png#gh-light-mode-only" width="359" />
-  <img src="https://user-images.githubusercontent.com/25087/219743408-3d7bef51-1409-40c0-8159-acc6e52f078e.png#gh-dark-mode-only" width="359" />
-  <br>
-  <a href="https://github.com/charmbracelet/log/releases"><img src="https://img.shields.io/github/release/charmbracelet/log.svg" alt="Latest Release"></a>
-  <a href="https://pkg.go.dev/github.com/charmbracelet/log?tab=doc"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="Go Docs"></a>
-  <a href="https://github.com/charmbracelet/log/actions"><img src="https://github.com/charmbracelet/log/workflows/build/badge.svg" alt="Build Status"></a>
+    <picture>
+      <source media="(prefers-color-scheme: light)" srcset="https://user-images.githubusercontent.com/25087/219742757-c8afe0d9-608a-4845-a555-ef59c0af9ebc.png" width="359">
+      <source media="(prefers-color-scheme: dark)" srcset="https://user-images.githubusercontent.com/25087/219743408-3d7bef51-1409-40c0-8159-acc6e52f078e.png" width="359">
+      <img src="https://user-images.githubusercontent.com/25087/219742757-c8afe0d9-608a-4845-a555-ef59c0af9ebc.png" width="359" />
+    </picture>
+    <br>
+    <a href="https://github.com/charmbracelet/log/releases"><img src="https://img.shields.io/github/release/charmbracelet/log.svg" alt="Latest Release"></a>
+    <a href="https://pkg.go.dev/github.com/charmbracelet/log?tab=doc"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="Go Docs"></a>
+    <a href="https://github.com/charmbracelet/log/actions"><img src="https://github.com/charmbracelet/log/workflows/build/badge.svg" alt="Build Status"></a>
 </p>
 
 A minimal and colorful Go logging library. 🪵
 
-![Demo](./demo.gif)
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://vhs.charm.sh/vhs-1wBImk2iSIuiiD7Ib9rufi.gif">
+    <source media="(prefers-color-scheme: light)" srcset="https://vhs.charm.sh/vhs-1wBImk2iSIuiiD7Ib9rufi.gif">
+    <!-- <source media="(prefers-color-scheme: light)" srcset="https://vhs.charm.sh/vhs-2NvOYS29AauVRgRRPmquXx.gif"> -->
+    <img src="https://vhs.charm.sh/vhs-1wBImk2iSIuiiD7Ib9rufi.gif" alt="Made with VHS" />
+</picture>
 
 It provides a leveled structured human readable logger with a small API. Unlike
 [standard `log`][stdlog], the Charm logger provides customizable colorful human
@@ -48,7 +56,12 @@ log.Debug("Cookie 🍪") // won't print anything
 log.Info("Hello World!")
 ```
 
-<img width="400" src="https://vhs.charm.sh/vhs-cKiS8OuRrF1VVVpscM9e3.gif" alt="Made with VHS">
+<picture>
+    <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-cKiS8OuRrF1VVVpscM9e3.gif">
+    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-cKiS8OuRrF1VVVpscM9e3.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4AeLaEuO3tDbECR1qe9Jvp.gif"> -->
+    <img width="400" src="https://vhs.charm.sh/vhs-4AeLaEuO3tDbECR1qe9Jvp.gif" alt="Made with VHS" />
+</picture>
 
 All logging levels accept optional key/value pairs to be printed along with a
 message.
@@ -58,7 +71,12 @@ err := fmt.Errorf("too much sugar")
 log.Error("failed to bake cookies", "err", err)
 ```
 
-<img width="600" src="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" alt="Made with VHS">
+<picture>
+    <source media="(prefers-color-scheme: dark)" width="600" srcset="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" >
+    <source media="(prefers-color-scheme: light)" width="600" srcset="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" >
+    <!-- <source media="(prefers-color-scheme: light)" width="600" srcset="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif"> -->
+    <img width="600" src="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif" alt="Made with VHS">
+</picture>
 
 You can use `log.Print()` to print messages without a level prefix.
 
@@ -78,7 +96,12 @@ if butter {
 }
 ```
 
-<img width="300" src="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif" alt="Made with VHS">
+<picture>
+    <source media="(prefers-color-scheme: dark)" width="300" srcset="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
+    <source media="(prefers-color-scheme: light)" width="300" srcset="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="300" srcset="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif"> -->
+    <img width="300" src="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif">
+</picture>
 
 ### Levels
 
@@ -130,7 +153,12 @@ time.Sleep(10 * time.Minute)
 logger.Info("Finished baking")
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif" alt="Made with VHS">
+<picture>
+    <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
+    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif"> -->
+    <img width="700" src="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif">
+</picture>
 
 Use `log.SetFormatter()` or `log.WithFormatter()` to change the output format.
 Available options are:
@@ -152,6 +180,33 @@ logger.SetReportCaller(false)
 logger.SetLevel(log.DebugLevel)
 ```
 
+### Styles
+
+You can customize the logger styles using [Lipgloss][lipgloss]. The styles are
+defined at a global level in [styles.go](./styles.go).
+
+```go
+// Override the default error level style.
+log.ErrorLevelStyle = lipgloss.NewStyle().
+    SetString("ERROR!!").
+    Padding(0, 1, 0, 1).
+    Background(lipgloss.AdaptiveColor{
+        Light: "203",
+        Dark:  "204",
+    }).
+    Foreground(lipgloss.Color("0"))
+// Add a custom style for key `err`
+log.KeyStyles["err"] = lipgloss.NewStyle().Foreground(lipgloss.Color("204"))
+log.Error("Whoops!", "err", "kitchen on fire")
+```
+
+<picture>
+    <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif">
+    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif"> -->
+    <img width="400" src="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif">
+</picture>
+
 ### Sub-logger
 
 Create sub-loggers with their specific fields.
@@ -162,7 +217,11 @@ batch2.Debug("Preparing batch 2...")
 batch2.Debug("Adding chocolate chips")
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-650Sw3rnwplHzwdfYNUp8n.gif" alt="Made with VHS">
+<picture>
+    <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-1JgP5ZRL0oXVspeg50CczR.gif">
+    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-1JgP5ZRL0oXVspeg50CczR.gif">
+    <img width="700" src="https://vhs.charm.sh/vhs-1JgP5ZRL0oXVspeg50CczR.gif">
+</picture>
 
 ### Format Messages
 
@@ -174,7 +233,12 @@ for item := 1; i <= 100; i++ {
 }
 ```
 
-<img width="500" src="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif" alt="Made with VHS">
+<picture>
+    <source media="(prefers-color-scheme: dark)" width="500" srcset="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
+    <source media="(prefers-color-scheme: light)" width="500" srcset="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="500" srcset="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif"> -->
+    <img width="500" src="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif">
+</picture>
 
 Or arguments:
 
@@ -184,7 +248,12 @@ for temp := 375; temp <= 400; temp++ {
 }
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif" alt="Made with VHS">
+<picture>
+    <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
+    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif"> -->
+    <img width="700" src="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif">
+</picture>
 
 ### Helper Functions
 
@@ -201,7 +270,12 @@ log.SetReportCaller(true)
 startOven(400) // INFO <cookies/oven.go:123> Starting oven degree=400
 ```
 
-<img width="700" src="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif" alt="Made with VHS">
+<picture>
+    <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
+    <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
+    <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif"> -->
+    <img width="700" src="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif">
+</picture>
 
 This will use the _caller_ function (`startOven`) line number instead of the
 logging function (`log.Info`) to report the source location.
