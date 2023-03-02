@@ -8,7 +8,8 @@
 	<meta name="description" content="{{ .basics.name }} - {{ .basics.label }}">
 	<title>{{ .basics.name }}</title>
 	<link rel="icon" href="data:,">
-	<link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+	<link rel="stylesheet" href="https://unpkg.com/simpledotcss@2.1.2/simple.min.css"
+		integrity="sha384-1UEnuv5+lFKWztSFy4XSI06e6RidDHdOm71nks2+uabm/oiddNpcJARfsJxJW3TO" crossorigin="anonymous">
 	<style>
 		aside {
 			font-size: 68%;
@@ -25,12 +26,16 @@
 		{{- end }}
 		<h2>{{ .basics.label }}</h2>
 		{{- $location := printf "%s, %s, %s" .basics.location.city .basics.location.region .basics.location.countrycode }}
-		<a href="https://maps.apple.com/?q={{ $location }}"><button>{{ $location }}</button></a>
-		<a href="mailto:{{ .basics.email }}"><button>{{ .basics.email }}</button></a>
-		<a href="tel:{{ .basics.phone }}"><button>{{ .basics.phone }}</button></a>
-		<a href="{{ .basics.url }}" title="{{ .basics.name }}"><button>{{ tr "website" }}</button></a>
+		<a href="https://maps.apple.com/?q={{ $location | urlencode }}" title="Map"><button>{{ $location }}</button></a>
+		<a href="mailto:{{ .basics.email }}" title="Email"><button>{{ .basics.email }}</button></a>
+		<a href="tel:{{ .basics.phone }}" title="Phone"><button>{{ .basics.phone }}</button></a>
+		<a href="{{ .basics.url }}"><button>{{ tr "website" }}</button></a>
 		{{- range .basics.profiles }}
-		<a href="{{ .url }}" title="{{ .network }} - {{ .username }}"><button>{{ .network }}</button></a>
+		{{- if eq (.network | lower) "pdf" }}
+		<a href="{{ .url }}" download="{{ .username }}.pdf" title="Download PDF"><button>{{ .network }}</button></a>
+		{{- else }}
+		<a href="{{ .url }}" title="{{ .network }}: {{ .username }}"><button>{{ .network }}</button></a>
+		{{- end }}
 		{{- end }}
 	</header>
 	<main>

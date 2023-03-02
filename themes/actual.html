@@ -712,17 +712,19 @@
             <ul>
               {{- if .basics.url }}
               <li class="article">
-                <a href="{{ .basics.url }}">
-                  {{ .basics.url | trimPrefix "https://" }}
-                </a>
+                <a href="{{ .basics.url }}">{{ .basics.url | trimPrefix "https://" }}</a>
               </li>
               {{- end }}
               {{- range .basics.profiles }}
+              {{- if eq (.network | lower) "pdf" }}
               <li class="article margin-text-4">
-                <a href="{{ .url }}">
-                  {{ .url | trimPrefix "https://" }}
-                </a>
+                <a href="{{ .url }}" download="{{ .username }}.pdf">{{ .url | trimPrefix "https://" }}</a>
               </li>
+              {{- else }}
+              <li class="article margin-text-4">
+                <a href="{{ .url }}">{{ .url | trimPrefix "https://" }}</a>
+              </li>
+              {{- end }}
               {{- end }}
             </ul>
           </div>
