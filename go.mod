@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/charmbracelet/log v0.1.2
 	github.com/gomarkdown/markdown v0.0.0-20221013030248-663e2500819c
-	github.com/kataras/i18n v0.0.6
+	github.com/kataras/i18n v0.0.7
 	github.com/playwright-community/playwright-go v0.2000.1
 	github.com/samber/lo v1.37.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.2.0
@@ -48,9 +48,9 @@ require (
 	github.com/subosito/gotenv v1.4.2 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/exp v0.0.0-20230224173230-c95f2b4c22f2 // indirect
-	golang.org/x/net v0.7.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

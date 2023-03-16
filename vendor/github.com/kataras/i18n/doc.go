@@ -5,13 +5,13 @@ Source code and other details for the project are available at GitHub:
 
 Current Version
 
-   0.0.5
+   0.0.7
 
 Installation
 
 The only requirement is the Go Programming Language
 
-    $ go get -u github.com/kataras/i18n
+    $ go get github.com/kataras/i18n@latest
 
 Examples
 
