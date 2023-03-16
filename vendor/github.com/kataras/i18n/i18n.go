@@ -19,13 +19,13 @@ import (
 // structure as:
 // - ./locales
 //   - el-GR
-//     - filename.yaml
-//     - filename.toml
-//     - filename.json
+//   - filename.yaml
+//   - filename.toml
+//   - filename.json
 //   - en-US
-//     - ...
+//   - ...
 //   - zh-CN
-//     - ...
+//   - ...
 //   - ...
 //
 // The default language depends on the first lookup, please use the package-level `SetDefaultLanguage`
@@ -375,7 +375,6 @@ func (i *I18n) GetLocale(r *http.Request) *Locale {
 	if !ok && i.ExtractFunc != nil {
 		if v := i.ExtractFunc(r); v != "" {
 			_, index, ok = i.TryMatchString(v)
-
 		}
 	}
 
@@ -467,7 +466,9 @@ func (i *I18n) setLang(w http.ResponseWriter, r *http.Request, lang string) {
 			SameSite: http.SameSiteLaxMode,
 		})
 	} else if i.URLParameter != "" {
-		r.URL.Query().Set(i.URLParameter, lang)
+		q := r.URL.Query()
+		q.Set(i.URLParameter, lang)
+		r.URL.RawQuery = q.Encode()
 	}
 
 	r.Header.Set(acceptLanguageHeaderKey, lang)
