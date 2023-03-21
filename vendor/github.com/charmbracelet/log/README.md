@@ -10,6 +10,8 @@
     <a href="https://github.com/charmbracelet/log/releases"><img src="https://img.shields.io/github/release/charmbracelet/log.svg" alt="Latest Release"></a>
     <a href="https://pkg.go.dev/github.com/charmbracelet/log?tab=doc"><img src="https://godoc.org/github.com/golang/gddo?status.svg" alt="Go Docs"></a>
     <a href="https://github.com/charmbracelet/log/actions"><img src="https://github.com/charmbracelet/log/workflows/build/badge.svg" alt="Build Status"></a>
+    <a href="https://codecov.io/gh/charmbracelet/log"><img alt="Codecov branch" src="https://img.shields.io/codecov/c/github/charmbracelet/log/main.svg"></a>
+    <a href="https://goreportcard.com/report/github.com/charmbracelet/log"><img alt="Go Report Card" src="https://goreportcard.com/badge/github.com/charmbracelet/log"></a>
 </p>
 
 A minimal and colorful Go logging library. 🪵
@@ -75,7 +77,7 @@ log.Error("failed to bake cookies", "err", err)
     <source media="(prefers-color-scheme: dark)" width="600" srcset="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" >
     <source media="(prefers-color-scheme: light)" width="600" srcset="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" >
     <!-- <source media="(prefers-color-scheme: light)" width="600" srcset="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif"> -->
-    <img width="600" src="https://vhs.charm.sh/vhs-7rk8wALXRDoFw8SLFwn9rW.gif" alt="Made with VHS">
+    <img width="600" src="https://vhs.charm.sh/vhs-65KIpGw4FTESK0IzkDB9VQ.gif" alt="Made with VHS">
 </picture>
 
 You can use `log.Print()` to print messages without a level prefix.
@@ -90,7 +92,7 @@ log.Print("Baking 101")
 Use `New()` to create new loggers.
 
 ```go
-logger := log.New()
+logger := log.New(os.Stderr)
 if butter {
     logger.Warn("chewy!", "butter", true)
 }
@@ -100,7 +102,7 @@ if butter {
     <source media="(prefers-color-scheme: dark)" width="300" srcset="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
     <source media="(prefers-color-scheme: light)" width="300" srcset="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="300" srcset="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif"> -->
-    <img width="300" src="https://vhs.charm.sh/vhs-1nrhNSuFnQkxWD4RoMlE4O.gif">
+    <img width="300" src="https://vhs.charm.sh/vhs-3QQdzOW4Zc0bN2tOhAest9.gif">
 </picture>
 
 ### Levels
@@ -109,23 +111,39 @@ Log offers multiple levels to filter your logs on. Available levels are:
 
 ```go
 log.DebugLevel
+log.InfoLevel
 log.WarnLevel
 log.ErrorLevel
 log.FatalLevel
 ```
 
-Use `log.SetLevel` or create a new logger with the `log.WithLevel` option to
-set the level.
+Use `log.SetLevel()` to set the log level. You can also create a new logger with
+a specific log level using `log.Options{Level: }`.
 
 Use the corresponding function to log a message:
 
 ```go
 err := errors.New("Baking error 101")
 log.Debug(err)
+log.Info(err)
 log.Warn(err)
 log.Error(err)
 log.Fatal(err) // this calls os.Exit(1)
 log.Print(err) // prints regardless of log level
+```
+
+Or use the formatter variant:
+
+```go
+format := "%s %d"
+log.Debugf(format, "chocolate", 10)
+log.Warnf(format, "adding more", 5)
+log.Errorf(format, "increasing temp", 420)
+log.Fatalf(format, "too hot!", 500) // this calls os.Exit(1)
+log.Printf(format, "baking cookies") // prints regardless of log level
+
+// Use these in conjunction with `With(...)` to add more context
+log.With("err", err).Errorf("unable to start %s", "oven")
 ```
 
 ### Structured
@@ -141,13 +159,16 @@ log.Debug("Available ingredients", "ingredients", ingredients)
 
 ### Options
 
-You can customize the logger with options. Use `log.WithCaller()` to enable
-printing source location. `log.WithTimestamp()` prints the timestamp of each
-log.
+You can customize the logger with options. Use `log.NewWithOptions()` and
+`log.Options{}` to customize your new logger.
 
 ```go
-logger := log.New(log.WithTimestamp(), log.WithTimeFormat(time.Kitchen),
-    log.WithCaller(), log.WithPrefix("Baking 🍪 "))
+logger := log.NewWithOptions(os.Stderr, log.Options{
+    ReportCaller: true,
+    ReportTimestamp: true,
+    TimeFormat: time.Kitchen,
+    Prefix: "Baking 🍪 "
+})
 logger.Info("Starting oven!", "degree", 375)
 time.Sleep(10 * time.Minute)
 logger.Info("Finished baking")
@@ -157,11 +178,20 @@ logger.Info("Finished baking")
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
     <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif"> -->
-    <img width="700" src="https://vhs.charm.sh/vhs-2X8Esd8ZsHo4DVPVgR36yx.gif">
+    <img width="700" src="https://vhs.charm.sh/vhs-6oSCJcQ5EmFKKELcskJhLo.gif">
 </picture>
 
-Use `log.SetFormatter()` or `log.WithFormatter()` to change the output format.
-Available options are:
+You can also use logger setters to customize the logger.
+
+```go
+logger := log.New(os.Stderr)
+logger.SetReportTimestamp(false)
+logger.SetReportCaller(false)
+logger.SetLevel(log.DebugLevel)
+```
+
+Use `log.SetFormatter()` or `log.Options{Formatter: }` to change the output
+format. Available options are:
 
 - `log.TextFormatter` (_default_)
 - `log.JSONFormatter`
@@ -171,14 +201,6 @@ Available options are:
 > output is not a TTY.
 
 For a list of available options, refer to [options.go](./options.go).
-
-Set the logger level and options.
-
-```go
-logger.SetReportTimestamp(false)
-logger.SetReportCaller(false)
-logger.SetLevel(log.DebugLevel)
-```
 
 ### Styles
 
@@ -197,14 +219,15 @@ log.ErrorLevelStyle = lipgloss.NewStyle().
     Foreground(lipgloss.Color("0"))
 // Add a custom style for key `err`
 log.KeyStyles["err"] = lipgloss.NewStyle().Foreground(lipgloss.Color("204"))
+log.ValueStyles["err"] = lipgloss.NewStyle().Bold(true)
 log.Error("Whoops!", "err", "kitchen on fire")
 ```
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif">
-    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-1s1qma0OVFeWFGqtBAPpfW.gif">
+    <source media="(prefers-color-scheme: dark)" width="400" srcset="https://vhs.charm.sh/vhs-4LXsGvzyH4RdjJaTF4a9MG.gif">
+    <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4LXsGvzyH4RdjJaTF4a9MG.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="400" srcset="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif"> -->
-    <img width="400" src="https://vhs.charm.sh/vhs-4f6qLnIfudMMLDD9sxXUrv.gif">
+    <img width="400" src="https://vhs.charm.sh/vhs-4LXsGvzyH4RdjJaTF4a9MG.gif">
 </picture>
 
 ### Sub-logger
@@ -237,7 +260,7 @@ for item := 1; i <= 100; i++ {
     <source media="(prefers-color-scheme: dark)" width="500" srcset="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
     <source media="(prefers-color-scheme: light)" width="500" srcset="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="500" srcset="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif"> -->
-    <img width="500" src="https://vhs.charm.sh/vhs-4RHXd4JSucomcPqJGZTpKh.gif">
+    <img width="500" src="https://vhs.charm.sh/vhs-4nX5I7qHT09aJ2gU7OaGV5.gif">
 </picture>
 
 Or arguments:
@@ -252,7 +275,7 @@ for temp := 375; temp <= 400; temp++ {
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
     <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif"> -->
-    <img width="700" src="https://vhs.charm.sh/vhs-4AvAnoA2S53QTOteX8krp4.gif">
+    <img width="700" src="https://vhs.charm.sh/vhs-79YvXcDOsqgHte3bv42UTr.gif">
 </picture>
 
 ### Helper Functions
@@ -274,7 +297,7 @@ startOven(400) // INFO <cookies/oven.go:123> Starting oven degree=400
     <source media="(prefers-color-scheme: dark)" width="700" srcset="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
     <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
     <!-- <source media="(prefers-color-scheme: light)" width="700" srcset="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif"> -->
-    <img width="700" src="https://vhs.charm.sh/vhs-6DPg0bVL4K4TkfoHkAn2ap.gif">
+    <img width="700" src="https://vhs.charm.sh/vhs-6CeQGIV8Ovgr8GD0N6NgTq.gif">
 </picture>
 
 This will use the _caller_ function (`startOven`) line number instead of the
@@ -290,7 +313,8 @@ For this, you can use the standard log adapter, which simply wraps the logger in
 a `*log.Logger` interface.
 
 ```go
-stdlog := log.New(log.WithPrefix("http")).StandardLog(log.StandardLogOption{
+logger := log.NewWithOptions(os.Stderr, log.Options{Prefix: "http"})
+stdlog := logger.StandardLog(log.StandardLogOptions{
     ForceLevel: log.ErrorLevel,
 })
 s := &http.Server{
