@@ -8,7 +8,7 @@ require (
 	github.com/gomarkdown/markdown v0.0.0-20221013030248-663e2500819c
 	github.com/kataras/i18n v0.0.7
 	github.com/playwright-community/playwright-go v0.2000.1
-	github.com/samber/lo v1.37.0
+	github.com/samber/lo v1.38.1
 	github.com/santhosh-tekuri/jsonschema/v5 v5.2.0
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
