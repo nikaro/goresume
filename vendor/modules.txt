@@ -109,7 +109,7 @@ github.com/playwright-community/playwright-go
 # github.com/rivo/uniseg v0.4.4
 ## explicit; go 1.18
 github.com/rivo/uniseg
-# github.com/samber/lo v1.37.0
+# github.com/samber/lo v1.38.1
 ## explicit; go 1.18
 github.com/samber/lo
 # github.com/santhosh-tekuri/jsonschema/v5 v5.2.0
