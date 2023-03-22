@@ -11,14 +11,14 @@ github.com/Masterminds/semver/v3
 # github.com/Masterminds/sprig/v3 v3.2.3
 ## explicit; go 1.13
 github.com/Masterminds/sprig/v3
-# github.com/aymanbagabas/go-osc52 v1.2.2
+# github.com/aymanbagabas/go-osc52/v2 v2.0.1
 ## explicit; go 1.16
-github.com/aymanbagabas/go-osc52
-# github.com/charmbracelet/lipgloss v0.6.0
-## explicit; go 1.15
+github.com/aymanbagabas/go-osc52/v2
+# github.com/charmbracelet/lipgloss v0.7.1
+## explicit; go 1.17
 github.com/charmbracelet/lipgloss
-# github.com/charmbracelet/log v0.1.2
-## explicit; go 1.15
+# github.com/charmbracelet/log v0.2.0
+## explicit; go 1.17
 github.com/charmbracelet/log
 # github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964
 ## explicit
@@ -93,8 +93,8 @@ github.com/muesli/reflow/ansi
 github.com/muesli/reflow/truncate
 github.com/muesli/reflow/wordwrap
 github.com/muesli/reflow/wrap
-# github.com/muesli/termenv v0.14.0
-## explicit; go 1.13
+# github.com/muesli/termenv v0.15.1
+## explicit; go 1.17
 github.com/muesli/termenv
 # github.com/pelletier/go-toml/v2 v2.0.6
 ## explicit; go 1.16

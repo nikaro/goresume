@@ -1,16 +1,65 @@
 package log
 
 import (
+	"bytes"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"sync"
+	"time"
 )
 
-var defaultLogger = New(WithTimestamp()).(*logger)
+var defaultLogger = NewWithOptions(os.Stderr, Options{ReportTimestamp: true})
 
 // Default returns the default logger. The default logger comes with timestamp enabled.
-func Default() Logger {
+func Default() *Logger {
 	return defaultLogger
+}
+
+// SetDefault sets the default global logger.
+func SetDefault(logger *Logger) {
+	defaultLogger = logger
+}
+
+// New returns a new logger with the default options.
+func New(w io.Writer) *Logger {
+	return NewWithOptions(w, Options{})
+}
+
+// NewWithOptions returns a new logger using the provided options.
+func NewWithOptions(w io.Writer, o Options) *Logger {
+	l := &Logger{
+		b:               bytes.Buffer{},
+		mu:              &sync.RWMutex{},
+		helpers:         &sync.Map{},
+		level:           int32(o.Level),
+		reportTimestamp: o.ReportTimestamp,
+		reportCaller:    o.ReportCaller,
+		prefix:          o.Prefix,
+		timeFunc:        o.TimeFunction,
+		timeFormat:      o.TimeFormat,
+		formatter:       o.Formatter,
+		fields:          o.Fields,
+		callerFormatter: o.CallerFormatter,
+	}
+
+	l.SetOutput(w)
+	l.SetLevel(Level(l.level))
+
+	if l.callerFormatter == nil {
+		l.callerFormatter = ShortCallerFormatter
+	}
+
+	if l.timeFunc == nil {
+		l.timeFunc = time.Now
+	}
+
+	if l.timeFormat == "" {
+		l.timeFormat = DefaultTimeFormat
+	}
+
+	return l
 }
 
 // SetReportTimestamp sets whether to report timestamp for the default logger.
@@ -53,6 +102,11 @@ func SetFormatter(f Formatter) {
 	defaultLogger.SetFormatter(f)
 }
 
+// SetCallerFormatter sets the caller formatter for the default logger.
+func SetCallerFormatter(f CallerFormatter) {
+	defaultLogger.SetCallerFormatter(f)
+}
+
 // SetPrefix sets the prefix for the default logger.
 func SetPrefix(prefix string) {
 	defaultLogger.SetPrefix(prefix)
@@ -64,8 +118,13 @@ func GetPrefix() string {
 }
 
 // With returns a new logger with the given keyvals.
-func With(keyvals ...interface{}) Logger {
+func With(keyvals ...interface{}) *Logger {
 	return defaultLogger.With(keyvals...)
+}
+
+// WithPrefix returns a new logger with the given prefix.
+func WithPrefix(prefix string) *Logger {
+	return defaultLogger.WithPrefix(prefix)
 }
 
 // Helper marks the calling function as a helper
@@ -107,7 +166,38 @@ func Print(msg interface{}, keyvals ...interface{}) {
 	defaultLogger.log(noLevel, msg, keyvals...)
 }
 
+// Debugf logs a debug message with formatting.
+func Debugf(format string, args ...interface{}) {
+	defaultLogger.log(DebugLevel, fmt.Sprintf(format, args...))
+}
+
+// Infof logs an info message with formatting.
+func Infof(format string, args ...interface{}) {
+	defaultLogger.log(InfoLevel, fmt.Sprintf(format, args...))
+}
+
+// Warnf logs a warning message with formatting.
+func Warnf(format string, args ...interface{}) {
+	defaultLogger.log(WarnLevel, fmt.Sprintf(format, args...))
+}
+
+// Errorf logs an error message with formatting.
+func Errorf(format string, args ...interface{}) {
+	defaultLogger.log(ErrorLevel, fmt.Sprintf(format, args...))
+}
+
+// Fatalf logs a fatal message with formatting and exit.
+func Fatalf(format string, args ...interface{}) {
+	defaultLogger.log(FatalLevel, fmt.Sprintf(format, args...))
+	os.Exit(1)
+}
+
+// Printf logs a message with formatting and no level.
+func Printf(format string, args ...interface{}) {
+	defaultLogger.log(noLevel, fmt.Sprintf(format, args...))
+}
+
 // StandardLog returns a standard logger from the default logger.
-func StandardLog(opts ...StandardLogOption) *log.Logger {
+func StandardLog(opts ...StandardLogOptions) *log.Logger {
 	return defaultLogger.StandardLog(opts...)
 }
