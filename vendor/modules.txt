@@ -17,7 +17,7 @@ github.com/aymanbagabas/go-osc52/v2
 # github.com/charmbracelet/lipgloss v0.7.1
 ## explicit; go 1.17
 github.com/charmbracelet/lipgloss
-# github.com/charmbracelet/log v0.2.0
+# github.com/charmbracelet/log v0.2.1
 ## explicit; go 1.17
 github.com/charmbracelet/log
 # github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964
@@ -72,7 +72,7 @@ github.com/lucasb-eyer/go-colorful
 # github.com/magiconair/properties v1.8.7
 ## explicit; go 1.19
 github.com/magiconair/properties
-# github.com/mattn/go-isatty v0.0.17
+# github.com/mattn/go-isatty v0.0.18
 ## explicit; go 1.15
 github.com/mattn/go-isatty
 # github.com/mattn/go-runewidth v0.0.14
