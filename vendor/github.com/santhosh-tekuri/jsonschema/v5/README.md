@@ -1,10 +1,10 @@
-# jsonschema v5.2.0
+# jsonschema v5.3.0
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GoDoc](https://godoc.org/github.com/santhosh-tekuri/jsonschema?status.svg)](https://pkg.go.dev/github.com/santhosh-tekuri/jsonschema/v5)
 [![Go Report Card](https://goreportcard.com/badge/github.com/santhosh-tekuri/jsonschema/v5)](https://goreportcard.com/report/github.com/santhosh-tekuri/jsonschema/v5)
 [![Build Status](https://github.com/santhosh-tekuri/jsonschema/actions/workflows/go.yaml/badge.svg?branch=master)](https://github.com/santhosh-tekuri/jsonschema/actions/workflows/go.yaml)
-[![codecov.io](https://codecov.io/github/santhosh-tekuri/jsonschema/coverage.svg?branch=master)](https://codecov.io/github/santhosh-tekuri/jsonschema?branch=master)
+[![codecov](https://codecov.io/gh/santhosh-tekuri/jsonschema/branch/master/graph/badge.svg?token=JMVj1pFT2l)](https://codecov.io/gh/santhosh-tekuri/jsonschema)
 
 Package jsonschema provides json-schema compilation and validation.
 
