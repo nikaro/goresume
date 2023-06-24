@@ -1,4 +1,4 @@
-module github.com/nikaro/goresume
+module github.com/sesh/goresume
 
 go 1.19
 
