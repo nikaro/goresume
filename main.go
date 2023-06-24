@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/charmbracelet/log"
@@ -251,6 +252,11 @@ var templatesFn template.FuncMap = template.FuncMap{
 	},
 	"urlencode": func(s string) string {
 		return url.QueryEscape(s)
+	},
+	"timeformat": func(format string, s string) string {
+		parsedTime, errParse := time.Parse("2006-01-02", s)
+		check(errParse)
+		return parsedTime.Format(format)
 	},
 }
 
