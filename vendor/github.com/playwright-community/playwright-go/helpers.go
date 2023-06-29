@@ -1,16 +1,19 @@
 package playwright
 
 import (
+	"fmt"
+	"path"
 	"reflect"
 	"regexp"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"github.com/danwakefield/fnmatch"
 )
 
 type (
-	routeHandler = func(Route, Request)
+	routeHandler = func(Route)
 )
 
 func skipFieldSerialization(val reflect.Value) bool {
@@ -166,18 +169,23 @@ func remapMapToStruct(inputMap interface{}, outStruct interface{}) {
 	remapValue(reflect.ValueOf(inputMap), reflect.ValueOf(outStruct).Elem())
 }
 
-func isFunctionBody(expression string) bool {
-	expression = strings.TrimSpace(expression)
-	return strings.HasPrefix(expression, "function") ||
-		strings.HasPrefix(expression, "async ") ||
-		strings.Contains(expression, "=> ")
-}
-
 type urlMatcher struct {
 	urlOrPredicate interface{}
 }
 
-func newURLMatcher(urlOrPredicate interface{}) *urlMatcher {
+func newURLMatcher(urlOrPredicate, baseURL interface{}) *urlMatcher {
+	if baseURL != nil {
+		url, ok := urlOrPredicate.(string)
+		if ok && !strings.HasPrefix(url, "*") {
+			base, ok := baseURL.(*string)
+			if ok && base != nil {
+				url = path.Join(*base, url)
+				return &urlMatcher{
+					urlOrPredicate: url,
+				}
+			}
+		}
+	}
 	return &urlMatcher{
 		urlOrPredicate: urlOrPredicate,
 	}
@@ -201,13 +209,68 @@ func (u *urlMatcher) Matches(url string) bool {
 type routeHandlerEntry struct {
 	matcher *urlMatcher
 	handler routeHandler
+	times   int
+	count   int32
 }
 
-func newRouteHandlerEntry(matcher *urlMatcher, handler routeHandler) *routeHandlerEntry {
+func (r *routeHandlerEntry) Matches(url string) bool {
+	return r.matcher.Matches(url)
+}
+
+func (r *routeHandlerEntry) Handle(route Route) chan bool {
+	handled := route.(*routeImpl).startHandling()
+	atomic.AddInt32(&r.count, 1)
+	r.handler(route)
+	return handled
+}
+
+func (r *routeHandlerEntry) WillExceed() bool {
+	if r.times == 0 {
+		return false
+	}
+	return int(atomic.LoadInt32(&r.count)+1) >= r.times
+}
+
+func newRouteHandlerEntry(matcher *urlMatcher, handler routeHandler, times ...int) *routeHandlerEntry {
+	n := 0
+	if len(times) > 0 {
+		n = times[0]
+	}
 	return &routeHandlerEntry{
 		matcher: matcher,
 		handler: handler,
+		times:   n,
+		count:   0,
 	}
+}
+
+func prepareInterceptionPatterns(handlers []*routeHandlerEntry) []map[string]interface{} {
+	patterns := []map[string]interface{}{}
+	all := false
+	for _, h := range handlers {
+		switch h.matcher.urlOrPredicate.(type) {
+		case *regexp.Regexp:
+			pattern, flags := convertRegexp(h.matcher.urlOrPredicate.(*regexp.Regexp))
+			patterns = append(patterns, map[string]interface{}{
+				"regexSource": pattern,
+				"regexFlags":  flags,
+			})
+		case string:
+			patterns = append(patterns, map[string]interface{}{
+				"glob": h.matcher.urlOrPredicate.(string),
+			})
+		default:
+			all = true
+		}
+	}
+	if all {
+		return []map[string]interface{}{
+			{
+				"glob": "**/*",
+			},
+		}
+	}
+	return patterns
 }
 
 type safeStringSet struct {
@@ -258,18 +321,32 @@ func newSafeStringSet(v []string) *safeStringSet {
 const defaultTimeout = 30 * 1000
 
 type timeoutSettings struct {
-	parent            *timeoutSettings
-	timeout           float64
-	navigationTimeout float64
+	sync.RWMutex
+	parent                   *timeoutSettings
+	defaultTimeout           *float64
+	defaultNavigationTimeout *float64
 }
 
-func (t *timeoutSettings) SetTimeout(timeout float64) {
-	t.timeout = timeout
+func (t *timeoutSettings) SetDefaultTimeout(timeout *float64) {
+	t.Lock()
+	defer t.Unlock()
+	t.defaultTimeout = timeout
 }
 
-func (t *timeoutSettings) Timeout() float64 {
-	if t.timeout != 0 {
-		return t.timeout
+func (t *timeoutSettings) DefaultTimeout() *float64 {
+	t.RLock()
+	defer t.RUnlock()
+	return t.defaultTimeout
+}
+
+func (t *timeoutSettings) Timeout(timeout ...float64) float64 {
+	t.RLock()
+	defer t.RUnlock()
+	if len(timeout) == 1 {
+		return timeout[0]
+	}
+	if t.defaultTimeout != nil {
+		return *t.defaultTimeout
 	}
 	if t.parent != nil {
 		return t.parent.Timeout()
@@ -277,13 +354,23 @@ func (t *timeoutSettings) Timeout() float64 {
 	return defaultTimeout
 }
 
-func (t *timeoutSettings) SetNavigationTimeout(navigationTimeout float64) {
-	t.navigationTimeout = navigationTimeout
+func (t *timeoutSettings) DefaultNavigationTimeout() *float64 {
+	t.RLock()
+	defer t.RUnlock()
+	return t.defaultNavigationTimeout
+}
+
+func (t *timeoutSettings) SetDefaultNavigationTimeout(navigationTimeout *float64) {
+	t.Lock()
+	defer t.Unlock()
+	t.defaultNavigationTimeout = navigationTimeout
 }
 
 func (t *timeoutSettings) NavigationTimeout() float64 {
-	if t.navigationTimeout != 0 {
-		return t.navigationTimeout
+	t.RLock()
+	defer t.RUnlock()
+	if t.defaultNavigationTimeout != nil {
+		return *t.defaultNavigationTimeout
 	}
 	if t.parent != nil {
 		return t.parent.NavigationTimeout()
@@ -293,45 +380,19 @@ func (t *timeoutSettings) NavigationTimeout() float64 {
 
 func newTimeoutSettings(parent *timeoutSettings) *timeoutSettings {
 	return &timeoutSettings{
-		parent:            parent,
-		timeout:           defaultTimeout,
-		navigationTimeout: defaultTimeout,
+		parent:                   parent,
+		defaultTimeout:           nil,
+		defaultNavigationTimeout: nil,
 	}
-}
-
-func waitForEvent(emitter EventEmitter, event string, predicate ...interface{}) <-chan interface{} {
-	evChan := make(chan interface{}, 1)
-	removeHandler := make(chan bool, 1)
-	handler := func(ev ...interface{}) {
-		if len(predicate) == 0 {
-			if len(ev) == 1 {
-				evChan <- ev[0]
-			} else {
-				evChan <- nil
-			}
-			removeHandler <- true
-		} else if len(predicate) == 1 {
-			result := reflect.ValueOf(predicate[0]).Call([]reflect.Value{reflect.ValueOf(ev[0])})
-			if result[0].Bool() {
-				evChan <- ev[0]
-				removeHandler <- true
-			}
-		}
-	}
-	go func() {
-		<-removeHandler
-		emitter.RemoveListener(event, handler)
-	}()
-	emitter.On(event, handler)
-	return evChan
 }
 
 // SelectOptionValues is the option struct for ElementHandle.Select() etc.
 type SelectOptionValues struct {
-	Values   *[]string
-	Indexes  *[]int
-	Labels   *[]string
-	Elements *[]ElementHandle
+	ValuesOrLabels *[]string
+	Values         *[]string
+	Indexes        *[]int
+	Labels         *[]string
+	Elements       *[]ElementHandle
 }
 
 func convertSelectOptionSet(values SelectOptionValues) map[string]interface{} {
@@ -341,6 +402,12 @@ func convertSelectOptionSet(values SelectOptionValues) map[string]interface{} {
 	}
 
 	var o []map[string]interface{}
+	if values.ValuesOrLabels != nil {
+		for _, v := range *values.ValuesOrLabels {
+			m := map[string]interface{}{"valueOrLabel": v}
+			o = append(o, m)
+		}
+	}
 	if values.Values != nil {
 		for _, v := range *values.Values {
 			m := map[string]interface{}{"value": v}
@@ -376,7 +443,7 @@ func convertSelectOptionSet(values SelectOptionValues) map[string]interface{} {
 	return out
 }
 
-func unroute(channel *channel, inRoutes []*routeHandlerEntry, url interface{}, handlers ...routeHandler) ([]*routeHandlerEntry, error) {
+func unroute(inRoutes []*routeHandlerEntry, url interface{}, handlers ...routeHandler) ([]*routeHandlerEntry, error) {
 	var handler routeHandler
 	if len(handlers) == 1 {
 		handler = handlers[0]
@@ -393,14 +460,6 @@ func unroute(channel *channel, inRoutes []*routeHandlerEntry, url interface{}, h
 		}
 	}
 
-	if len(routes) == 0 {
-		_, err := channel.Send("setNetworkInterceptionEnabled", map[string]interface{}{
-			"enabled": false,
-		})
-		if err != nil {
-			return nil, err
-		}
-	}
 	return routes, nil
 }
 
@@ -413,4 +472,105 @@ func serializeMapToNameAndValue(headers map[string]string) []map[string]string {
 		})
 	}
 	return serialized
+}
+
+// assignStructFields assigns fields from src to dest,
+//
+//	omitExtra determines whether to omit src's extra fields
+func assignStructFields(dest, src interface{}, omitExtra bool) error {
+	destValue := reflect.ValueOf(dest)
+	if destValue.Kind() != reflect.Ptr || destValue.IsNil() {
+		return fmt.Errorf("dest must be a non-nil pointer")
+	}
+	destValue = destValue.Elem()
+	if destValue.Kind() != reflect.Struct {
+		return fmt.Errorf("dest must be a struct")
+	}
+
+	srcValue := reflect.ValueOf(src)
+	if srcValue.Kind() == reflect.Ptr {
+		srcValue = srcValue.Elem()
+	}
+	if srcValue.Kind() != reflect.Struct {
+		return fmt.Errorf("src must be a struct")
+	}
+
+	for i := 0; i < destValue.NumField(); i++ {
+		destField := destValue.Field(i)
+		destFieldType := destField.Type()
+		destFieldName := destValue.Type().Field(i).Name
+
+		if srcField := srcValue.FieldByName(destFieldName); srcField.IsValid() && srcField.Type() != destFieldType {
+			return fmt.Errorf("mismatched field type for field %s", destFieldName)
+		} else if srcField.IsValid() {
+			destField.Set(srcField)
+		}
+	}
+
+	if !omitExtra {
+		for i := 0; i < srcValue.NumField(); i++ {
+			srcFieldName := srcValue.Type().Field(i).Name
+
+			if destField := destValue.FieldByName(srcFieldName); !destField.IsValid() {
+				return fmt.Errorf("extra field %s in src", srcFieldName)
+			}
+		}
+	}
+
+	return nil
+}
+
+func deserializeNameAndValueToMap(headersArray []map[string]string) map[string]string {
+	unserialized := make(map[string]string)
+	for _, item := range headersArray {
+		unserialized[item["name"]] = item["value"]
+	}
+	return unserialized
+}
+
+type recordHarOptions struct {
+	Path           string            `json:"path"`
+	Content        *HarContentPolicy `json:"content,omitempty"`
+	Mode           *HarMode          `json:"mode,omitempty"`
+	UrlGlob        *string           `json:"urlGlob,omitempty"`
+	UrlRegexSource *string           `json:"urlRegexSource,omitempty"`
+	UrlRegexFlags  *string           `json:"urlRegexFlags,omitempty"`
+}
+
+type recordHarInputOptions struct {
+	Path        string
+	URL         interface{}
+	Mode        *HarMode
+	Content     *HarContentPolicy
+	OmitContent *bool
+}
+
+type harRecordingMetadata struct {
+	Path    string
+	Content *HarContentPolicy
+}
+
+func prepareRecordHarOptions(option recordHarInputOptions) recordHarOptions {
+	out := recordHarOptions{
+		Path: option.Path,
+	}
+	if option.URL != nil {
+		switch option.URL.(type) {
+		case *regexp.Regexp:
+			pattern, flags := convertRegexp(option.URL.(*regexp.Regexp))
+			out.UrlRegexSource = String(pattern)
+			out.UrlRegexFlags = String(flags)
+		case string:
+			out.UrlGlob = String(option.URL.(string))
+		}
+	}
+	if option.Mode != nil {
+		out.Mode = option.Mode
+	}
+	if option.Content != nil {
+		out.Content = option.Content
+	} else if option.OmitContent != nil && *option.OmitContent {
+		out.Content = HarContentPolicyOmit
+	}
+	return out
 }

@@ -17,19 +17,11 @@ type jsHandleImpl struct {
 
 func (j *jsHandleImpl) Evaluate(expression string, options ...interface{}) (interface{}, error) {
 	var arg interface{}
-	forceExpression := false
-	if !isFunctionBody(expression) {
-		forceExpression = true
-	}
 	if len(options) == 1 {
 		arg = options[0]
-	} else if len(options) == 2 {
-		arg = options[0]
-		forceExpression = options[1].(bool)
 	}
 	result, err := j.channel.Send("evaluateExpression", map[string]interface{}{
 		"expression": expression,
-		"isFunction": !forceExpression,
 		"arg":        serializeArgument(arg),
 	})
 	if err != nil {
@@ -40,19 +32,11 @@ func (j *jsHandleImpl) Evaluate(expression string, options ...interface{}) (inte
 
 func (j *jsHandleImpl) EvaluateHandle(expression string, options ...interface{}) (JSHandle, error) {
 	var arg interface{}
-	forceExpression := false
-	if !isFunctionBody(expression) {
-		forceExpression = true
-	}
 	if len(options) == 1 {
 		arg = options[0]
-	} else if len(options) == 2 {
-		arg = options[0]
-		forceExpression = options[1].(bool)
 	}
 	result, err := j.channel.Send("evaluateExpressionHandle", map[string]interface{}{
 		"expression": expression,
-		"isFunction": !forceExpression,
 		"arg":        serializeArgument(arg),
 	})
 	if err != nil {
@@ -109,7 +93,7 @@ func (j *jsHandleImpl) JSONValue() (interface{}, error) {
 	return parseResult(v), nil
 }
 
-func parseValue(result interface{}) interface{} {
+func parseValue(result interface{}, refs map[float64]interface{}) interface{} {
 	vMap := result.(map[string]interface{})
 	if v, ok := vMap["n"]; ok {
 		if math.Ceil(v.(float64))-v.(float64) == 0 {
@@ -117,6 +101,14 @@ func parseValue(result interface{}) interface{} {
 		}
 		return v.(float64)
 	}
+
+	if v, ok := vMap["ref"]; ok {
+		if vV, ok := refs[v.(float64)]; ok {
+			return vV
+		}
+		return nil
+	}
+
 	if v, ok := vMap["s"]; ok {
 		return v.(string)
 	}
@@ -146,17 +138,19 @@ func parseValue(result interface{}) interface{} {
 	}
 	if v, ok := vMap["a"]; ok {
 		aV := v.([]interface{})
+		refs[vMap["id"].(float64)] = aV
 		for i := range aV {
-			aV[i] = parseValue(aV[i])
+			aV[i] = parseValue(aV[i], refs)
 		}
 		return aV
 	}
 	if v, ok := vMap["o"]; ok {
 		aV := v.([]interface{})
+		refs[vMap["id"].(float64)] = v
 		out := map[string]interface{}{}
 		for key := range aV {
 			entry := aV[key].(map[string]interface{})
-			out[entry["k"].(string)] = parseValue(entry["v"])
+			out[entry["k"].(string)] = parseValue(entry["v"], refs)
 		}
 		return out
 	}
@@ -248,13 +242,14 @@ func serializeValue(value interface{}, handles *[]*channel, depth int) interface
 			"b": v,
 		}
 	}
+
 	return map[string]interface{}{
 		"v": "undefined",
 	}
 }
 
 func parseResult(result interface{}) interface{} {
-	return parseValue(result)
+	return parseValue(result, map[float64]interface{}{})
 }
 
 func serializeArgument(arg interface{}) interface{} {

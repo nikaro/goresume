@@ -3,7 +3,7 @@ package playwright
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"os"
 )
 
 type elementHandleImpl struct {
@@ -131,20 +131,12 @@ func (e *elementHandleImpl) QuerySelectorAll(selector string) ([]ElementHandle, 
 
 func (e *elementHandleImpl) EvalOnSelector(selector string, expression string, options ...interface{}) (interface{}, error) {
 	var arg interface{}
-	forceExpression := false
-	if !isFunctionBody(expression) {
-		forceExpression = true
-	}
 	if len(options) == 1 {
 		arg = options[0]
-	} else if len(options) == 2 {
-		arg = options[0]
-		forceExpression = options[1].(bool)
 	}
 	result, err := e.channel.Send("evalOnSelector", map[string]interface{}{
 		"selector":   selector,
 		"expression": expression,
-		"isFunction": !forceExpression,
 		"arg":        serializeArgument(arg),
 	})
 	if err != nil {
@@ -155,20 +147,12 @@ func (e *elementHandleImpl) EvalOnSelector(selector string, expression string, o
 
 func (e *elementHandleImpl) EvalOnSelectorAll(selector string, expression string, options ...interface{}) (interface{}, error) {
 	var arg interface{}
-	forceExpression := false
-	if !isFunctionBody(expression) {
-		forceExpression = true
-	}
 	if len(options) == 1 {
 		arg = options[0]
-	} else if len(options) == 2 {
-		arg = options[0]
-		forceExpression = options[1].(bool)
 	}
 	result, err := e.channel.Send("evalOnSelectorAll", map[string]interface{}{
 		"selector":   selector,
 		"expression": expression,
-		"isFunction": !forceExpression,
 		"arg":        serializeArgument(arg),
 	})
 	if err != nil {
@@ -265,7 +249,7 @@ func (e *elementHandleImpl) Screenshot(options ...ElementHandleScreenshotOptions
 		return nil, fmt.Errorf("could not decode base64 :%w", err)
 	}
 	if path != nil {
-		if err := ioutil.WriteFile(*path, image, 0644); err != nil {
+		if err := os.WriteFile(*path, image, 0644); err != nil {
 			return nil, err
 		}
 	}
