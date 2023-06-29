@@ -12,18 +12,20 @@ type (
 		on   []interface{}
 	}
 	eventEmitter struct {
-		eventsMutex         sync.Mutex
-		events              map[string]*eventRegister
-		addEventHandlers    []func(name string, handler interface{})
-		removeEventHandlers []func(name string, handler interface{})
+		eventsMutex sync.Mutex
+		events      map[string]*eventRegister
 	}
 )
 
-func (e *eventEmitter) Emit(name string, payload ...interface{}) {
+func (e *eventEmitter) Emit(name string, payload ...interface{}) (handled bool) {
 	e.eventsMutex.Lock()
 	defer e.eventsMutex.Unlock()
 	if _, ok := e.events[name]; !ok {
 		return
+	}
+
+	if len(e.events[name].once) > 0 || len(e.events[name].on) > 0 {
+		handled = true
 	}
 
 	payloadV := make([]reflect.Value, 0)
@@ -43,6 +45,7 @@ func (e *eventEmitter) Emit(name string, payload ...interface{}) {
 	callHandlers(e.events[name].once)
 
 	e.events[name].once = make([]interface{}, 0)
+	return
 }
 
 func (e *eventEmitter) Once(name string, handler interface{}) {
@@ -53,18 +56,7 @@ func (e *eventEmitter) On(name string, handler interface{}) {
 	e.addEvent(name, handler, false)
 }
 
-func (e *eventEmitter) addEventHandler(handler func(name string, handler interface{})) {
-	e.addEventHandlers = append(e.addEventHandlers, handler)
-}
-
-func (e *eventEmitter) removeEventHandler(handler func(name string, handler interface{})) {
-	e.removeEventHandlers = append(e.removeEventHandlers, handler)
-}
-
 func (e *eventEmitter) RemoveListener(name string, handler interface{}) {
-	for _, mitm := range e.removeEventHandlers {
-		mitm(name, handler)
-	}
 	e.eventsMutex.Lock()
 	defer e.eventsMutex.Unlock()
 	if _, ok := e.events[name]; !ok {
@@ -92,20 +84,20 @@ func (e *eventEmitter) RemoveListener(name string, handler interface{}) {
 	e.events[name].once = onceHandlers
 }
 
+// ListenerCount count the listeners by name, count all if name is empty
 func (e *eventEmitter) ListenerCount(name string) int {
 	count := 0
 	e.eventsMutex.Lock()
 	for key := range e.events {
-		count += len(e.events[key].on) + len(e.events[key].once)
+		if name == "" || name == key {
+			count += len(e.events[key].on) + len(e.events[key].once)
+		}
 	}
 	e.eventsMutex.Unlock()
 	return count
 }
 
 func (e *eventEmitter) addEvent(name string, handler interface{}, once bool) {
-	for _, mitm := range e.addEventHandlers {
-		mitm(name, handler)
-	}
 	e.eventsMutex.Lock()
 	if _, ok := e.events[name]; !ok {
 		e.events[name] = &eventRegister{

@@ -3,6 +3,7 @@ package playwright
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 )
 
 type responseImpl struct {
@@ -11,6 +12,10 @@ type responseImpl struct {
 	provisionalHeaders *rawHeaders
 	rawHeaders         *rawHeaders
 	finished           chan bool
+}
+
+func (r *responseImpl) FromServiceWorker() bool {
+	return r.initializer["fromServiceWorker"].(bool)
 }
 
 func (r *responseImpl) URL() string {
@@ -33,8 +38,18 @@ func (r *responseImpl) Headers() map[string]string {
 	return r.provisionalHeaders.Headers()
 }
 
-func (r *responseImpl) Finished() {
+func (r *responseImpl) Finished() error {
+	page, ok := r.Request().Frame().Page().(*pageImpl)
+	if ok {
+		select {
+		case <-page.closedOrCrashed:
+			return errors.New("Target closed")
+		case <-r.finished:
+			return nil
+		}
+	}
 	<-r.finished
+	return nil
 }
 
 func (r *responseImpl) Body() ([]byte, error) {
