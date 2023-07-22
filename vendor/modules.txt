@@ -116,8 +116,8 @@ github.com/rivo/uniseg
 # github.com/samber/lo v1.38.1
 ## explicit; go 1.18
 github.com/samber/lo
-# github.com/santhosh-tekuri/jsonschema/v5 v5.3.0
-## explicit; go 1.15
+# github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
+## explicit; go 1.19
 github.com/santhosh-tekuri/jsonschema/v5
 github.com/santhosh-tekuri/jsonschema/v5/httploader
 # github.com/shopspring/decimal v1.3.1
