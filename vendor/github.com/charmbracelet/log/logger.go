@@ -58,10 +58,6 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		return
 	}
 
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	defer l.b.Reset()
-
 	var kvs []interface{}
 	if l.reportTimestamp {
 		kvs = append(kvs, TimestampKey, l.timeFunc())
@@ -79,7 +75,7 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	}
 
 	if l.prefix != "" {
-		kvs = append(kvs, PrefixKey, l.prefix+":")
+		kvs = append(kvs, PrefixKey, l.prefix)
 	}
 
 	if msg != nil {
@@ -98,6 +94,8 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		kvs = append(kvs, ErrMissingValue)
 	}
 
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	switch l.formatter {
 	case LogfmtFormatter:
 		l.logfmtFormatter(kvs...)
@@ -107,7 +105,8 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		l.textFormatter(kvs...)
 	}
 
-	_, _ = l.w.Write(l.b.Bytes())
+	// WriteTo will reset the buffer
+	l.b.WriteTo(l.w) // nolint: errcheck
 }
 
 // Helper marks the calling function as a helper
@@ -285,7 +284,9 @@ func (l *Logger) SetCallerOffset(offset int) {
 
 // With returns a new logger with the given keyvals added.
 func (l *Logger) With(keyvals ...interface{}) *Logger {
+	l.mu.Lock()
 	sl := *l
+	l.mu.Unlock()
 	sl.b = bytes.Buffer{}
 	sl.mu = &sync.RWMutex{}
 	sl.helpers = &sync.Map{}
