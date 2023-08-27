@@ -39,7 +39,7 @@ brews:
   - homepage: "https://github.con/nikaro/goresume"
     description: "Build HTML/PDF resume from JSON/YAML/TOML."
     license: "MIT"
-    tap:
+    repository:
       owner: "nikaro"
       name: "homebrew-tap"
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
