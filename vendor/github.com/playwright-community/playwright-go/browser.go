@@ -1,10 +1,10 @@
 package playwright
 
 import (
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 type browserImpl struct {
@@ -14,6 +14,7 @@ type browserImpl struct {
 	shouldCloseConnectionOnClose bool
 	contexts                     []BrowserContext
 	browserType                  BrowserType
+	chromiumTracingPath          *string
 }
 
 func (b *browserImpl) BrowserType() BrowserType {
@@ -56,13 +57,13 @@ func (b *browserImpl) NewContext(options ...BrowserNewContextOptions) (BrowserCo
 	if option.RecordHarPath != nil {
 		overrides["recordHar"] = prepareRecordHarOptions(recordHarInputOptions{
 			Path:        *options[0].RecordHarPath,
-			URL:         options[0].RecordHarUrlFilter,
+			URL:         options[0].RecordHarURLFilter,
 			Mode:        options[0].RecordHarMode,
 			Content:     options[0].RecordHarContent,
 			OmitContent: options[0].RecordHarOmitContent,
 		})
 		options[0].RecordHarPath = nil
-		options[0].RecordHarUrlFilter = nil
+		options[0].RecordHarURLFilter = nil
 		options[0].RecordHarMode = nil
 		options[0].RecordHarContent = nil
 		options[0].RecordHarOmitContent = nil
@@ -77,8 +78,12 @@ func (b *browserImpl) NewContext(options ...BrowserNewContextOptions) (BrowserCo
 	return context, nil
 }
 
-func (b *browserImpl) NewPage(options ...BrowserNewContextOptions) (Page, error) {
-	context, err := b.NewContext(options...)
+func (b *browserImpl) NewPage(options ...BrowserNewPageOptions) (Page, error) {
+	opts := make([]BrowserNewContextOptions, 0)
+	if len(options) == 1 {
+		opts = append(opts, BrowserNewContextOptions(options[0]))
+	}
+	context, err := b.NewContext(opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +122,7 @@ func (b *browserImpl) Close() error {
 	b.Unlock()
 	_, err := b.channel.Send("close")
 	if err != nil && !isSafeCloseError(err) {
-		return fmt.Errorf("could not send message: %w", err)
+		return fmt.Errorf("close browser failed: %w", err)
 	}
 	if b.shouldCloseConnectionOnClose {
 		return b.connection.Stop()
@@ -139,18 +144,37 @@ func (b *browserImpl) StartTracing(options ...BrowserStartTracingOptions) error 
 		overrides["page"] = option.Page.(*pageImpl).channel
 		option.Page = nil
 	}
+	if option.Path != nil {
+		b.chromiumTracingPath = option.Path
+		option.Path = nil
+	}
 	_, err := b.channel.Send("startTracing", option, overrides)
 	return err
 }
 
 func (b *browserImpl) StopTracing() ([]byte, error) {
-	data, err := b.channel.Send("stopTracing")
+	channel, err := b.channel.Send("stopTracing")
 	if err != nil {
 		return nil, err
 	}
-	binary, err := base64.StdEncoding.DecodeString(data.(string))
+	artifact := fromChannel(channel).(*artifactImpl)
+	binary, err := artifact.ReadIntoBuffer()
 	if err != nil {
-		return nil, fmt.Errorf("could not decode base64 :%w", err)
+		return nil, err
+	}
+	err = artifact.Delete()
+	if err != nil {
+		return binary, err
+	}
+	if b.chromiumTracingPath != nil {
+		err := os.MkdirAll(filepath.Dir(*b.chromiumTracingPath), 0777)
+		if err != nil {
+			return binary, err
+		}
+		err = os.WriteFile(*b.chromiumTracingPath, binary, 0644)
+		if err != nil {
+			return binary, err
+		}
 	}
 	return binary, nil
 }
@@ -160,9 +184,15 @@ func (b *browserImpl) onClose() {
 	b.isClosedOrClosing = true
 	if b.isConnected {
 		b.isConnected = false
-		b.Emit("disconnected")
+		b.Unlock()
+		b.Emit("disconnected", b)
+		return
 	}
 	b.Unlock()
+}
+
+func (b *browserImpl) OnDisconnected(fn func(Browser)) {
+	b.On("disconnected", fn)
 }
 
 func newBrowser(parent *channelOwner, objectType string, guid string, initializer map[string]interface{}) *browserImpl {

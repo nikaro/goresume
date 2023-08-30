@@ -106,7 +106,7 @@ github.com/pelletier/go-toml/v2/internal/characters
 github.com/pelletier/go-toml/v2/internal/danger
 github.com/pelletier/go-toml/v2/internal/tracker
 github.com/pelletier/go-toml/v2/unstable
-# github.com/playwright-community/playwright-go v0.3500.0
+# github.com/playwright-community/playwright-go v0.3700.0
 ## explicit; go 1.19
 github.com/playwright-community/playwright-go
 github.com/playwright-community/playwright-go/internal/multierror
@@ -194,8 +194,6 @@ golang.org/x/text/unicode/norm
 # gopkg.in/ini.v1 v1.67.0
 ## explicit
 gopkg.in/ini.v1
-# gopkg.in/square/go-jose.v2 v2.6.0
-## explicit
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
