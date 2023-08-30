@@ -4,9 +4,9 @@ import "strings"
 
 // Error represents a Playwright error
 type Error struct {
-	Name    string
-	Message string
-	Stack   string
+	Name    string `json:"name"`
+	Message string `json:"message"`
+	Stack   string `json:"stack"`
 }
 
 func (e *Error) Error() string {
@@ -32,7 +32,7 @@ var TimeoutError = &Error{
 	Name: "TimeoutError",
 }
 
-func parseError(err errorPayload) error {
+func parseError(err Error) error {
 	return &Error{
 		Name:    err.Name,
 		Message: err.Message,

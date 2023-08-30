@@ -216,6 +216,8 @@ github.com/playwright-community/playwright-go v0.2000.1 h1:2JViSHpJQ/UL/PO1Gg6gX
 github.com/playwright-community/playwright-go v0.2000.1/go.mod h1:1y9cM9b9dVHnuRWzED1KLM7FtbwTJC8ibDjI6MNqewU=
 github.com/playwright-community/playwright-go v0.3500.0 h1:pWUwUa+JDibO3IOOjWsZ6d0gVehsLVCt6ZpJitePJXM=
 github.com/playwright-community/playwright-go v0.3500.0/go.mod h1:5BciqynTw2vyGwuMfhqfsc7hktCoZvoYQ+TBHRxvUME=
+github.com/playwright-community/playwright-go v0.3700.0 h1:o24or0GramrndTYc1JbVmtfft1SVLjRGYL/zTx0AzyA=
+github.com/playwright-community/playwright-go v0.3700.0/go.mod h1:mbNzMqt04IVRdhVfXWqmCxd81gCdL3BA5hj6/pVAIqM=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=

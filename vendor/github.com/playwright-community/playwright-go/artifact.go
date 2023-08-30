@@ -1,6 +1,9 @@
 package playwright
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type artifactImpl struct {
 	channelOwner
@@ -15,6 +18,9 @@ func (a *artifactImpl) PathAfterFinished() (string, error) {
 		return "", errors.New("Path is not available when connecting remotely. Use SaveAs() to save a local copy")
 	}
 	path, err := a.channel.Send("pathAfterFinished")
+	if path == nil {
+		return "", err
+	}
 	return path.(string), err
 }
 
@@ -33,22 +39,34 @@ func (a *artifactImpl) SaveAs(path string) error {
 	return stream.SaveAs(path)
 }
 
-func (d *artifactImpl) Failure() (string, error) {
-	failure, err := d.channel.Send("failure")
+func (a *artifactImpl) Failure() error {
+	failure, err := a.channel.Send("failure")
 	if failure == nil {
-		return "", err
+		return err
 	}
-	return failure.(string), err
+	return fmt.Errorf("%v", failure)
 }
 
-func (d *artifactImpl) Delete() error {
-	_, err := d.channel.Send("delete")
+func (a *artifactImpl) Delete() error {
+	_, err := a.channel.Send("delete")
 	return err
 }
 
-func (d *artifactImpl) Cancel() error {
-	_, err := d.channel.Send("cancel")
+func (a *artifactImpl) Cancel() error {
+	_, err := a.channel.Send("cancel")
 	return err
+}
+
+func (a *artifactImpl) ReadIntoBuffer() ([]byte, error) {
+	streamChannel, err := a.channel.Send("stream")
+	if err != nil {
+		return nil, err
+	}
+	stream := fromNullableChannel(streamChannel)
+	if stream == nil {
+		return nil, nil
+	}
+	return stream.(*streamImpl).ReadAll()
 }
 
 func newArtifact(parent *channelOwner, objectType string, guid string, initializer map[string]interface{}) *artifactImpl {

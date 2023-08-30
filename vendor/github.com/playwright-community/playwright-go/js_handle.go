@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"math/big"
 	"reflect"
 	"runtime/debug"
 	"strings"
@@ -101,6 +102,11 @@ func parseValue(result interface{}, refs map[float64]interface{}) interface{} {
 		}
 		return v.(float64)
 	}
+	if v, ok := vMap["bi"]; ok {
+		n := new(big.Int)
+		n.SetString(v.(string), 0)
+		return n
+	}
 
 	if v, ok := vMap["ref"]; ok {
 		if vV, ok := refs[v.(float64)]; ok {
@@ -178,6 +184,11 @@ func serializeValue(value interface{}, handles *[]*channel, depth int) interface
 	if value == nil {
 		return map[string]interface{}{
 			"v": "undefined",
+		}
+	}
+	if n, ok := value.(*big.Int); ok {
+		return map[string]interface{}{
+			"bi": n.String(),
 		}
 	}
 	refV := reflect.ValueOf(value)
@@ -264,7 +275,7 @@ func serializeArgument(arg interface{}) interface{} {
 func serializeError(err error) map[string]interface{} {
 	stack := strings.Split(string(debug.Stack()), "\n")
 	return map[string]interface{}{
-		"error": &errorPayload{
+		"error": &Error{
 			Name:    "Playwright for Go Error",
 			Message: err.Error(),
 			Stack:   strings.Join(stack[:len(stack)-5], "\n"),
