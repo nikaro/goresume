@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type apiRequestImpl struct {
@@ -255,13 +256,13 @@ func (r *apiRequestContextImpl) Post(url string, options ...APIRequestContextPos
 	return r.Fetch(url, opts)
 }
 
-func (r *apiRequestContextImpl) StorageState(paths ...string) (*StorageState, error) {
+func (r *apiRequestContextImpl) StorageState(path ...string) (*StorageState, error) {
 	result, err := r.channel.SendReturnAsDict("storageState")
 	if err != nil {
 		return nil, err
 	}
-	if len(paths) == 1 {
-		file, err := os.Create(paths[0])
+	if len(path) == 1 {
+		file, err := os.Create(path[0])
 		if err != nil {
 			return nil, err
 		}
@@ -322,7 +323,7 @@ func (r *apiResponseImpl) Headers() map[string]string {
 	return r.headers.Headers()
 }
 
-func (r *apiResponseImpl) HeadersArray() HeadersArray {
+func (r *apiResponseImpl) HeadersArray() []NameValue {
 	return r.headers.HeadersArray()
 }
 
@@ -397,7 +398,7 @@ func countNonNil(args ...interface{}) int {
 func isJsonContentType(headers []map[string]string) bool {
 	if len(headers) > 0 {
 		for _, v := range headers {
-			if v["name"] == "Content-Type" {
+			if strings.ToLower(v["name"]) == "content-type" {
 				if v["value"] == "application/json" {
 					return true
 				}
