@@ -37,7 +37,7 @@ aurs:
 
 brews:
   - homepage: "https://github.con/nikaro/goresume"
-    description: "Build HTML/PDF resume from JSON/YAML/TOML."
+    description: "Build HTML/PDF resume from JSON/YAML/TOML"
     license: "MIT"
     repository:
       owner: "nikaro"
