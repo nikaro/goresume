@@ -9,8 +9,11 @@ permissions:
   id-token: write
   pages: write
 
-jobs:
+env:
+  # renovate: datasource=github-releases depName=jgm/pandoc
+  PANDOC_VERSION: 3.1
 
+jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
@@ -44,7 +47,7 @@ jobs:
           cache: true
           check-latest: true
           go-version-file: go.mod
-      - run: ansible -b -m apt -a deb=https://github.com/jgm/pandoc/releases/download/3.1/pandoc-3.1-1-amd64.deb localhost
+      - run: ansible -b -m apt -a deb=https://github.com/jgm/pandoc/releases/download/${{ env.PANDOC_VERSION }}/pandoc-${{ env.PANDOC_VERSION }}-1-amd64.deb localhost
       - run: make docs
       - uses: actions/upload-pages-artifact@v2
         with:
