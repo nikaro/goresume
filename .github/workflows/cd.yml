@@ -11,7 +11,7 @@ permissions:
 
 env:
   # renovate: datasource=github-releases depName=jgm/pandoc
-  PANDOC_VERSION: 3.1
+  PANDOC_VERSION: 3.1.8
 
 jobs:
   release:
@@ -23,13 +23,13 @@ jobs:
       HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4
         with:
           cache: true
           check-latest: true
           go-version-file: go.mod
       - run: git fetch --force --tags
-      - uses: goreleaser/goreleaser-action@v5
+      - uses: goreleaser/goreleaser-action@7ec5c2b0c6cdda6e8bbb49444bc797dd33d74dd8 # v5
         with:
           args: release --clean
 
@@ -41,16 +41,16 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
-      - uses: actions/configure-pages@v3
-      - uses: actions/setup-go@v4
+      - uses: actions/configure-pages@f156874f8191504dae5b037505266ed5dda6c382 # v3
+      - uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4
         with:
           cache: true
           check-latest: true
           go-version-file: go.mod
       - run: ansible -b -m apt -a deb=https://github.com/jgm/pandoc/releases/download/${{ env.PANDOC_VERSION }}/pandoc-${{ env.PANDOC_VERSION }}-1-amd64.deb localhost
       - run: make docs
-      - uses: actions/upload-pages-artifact@v2
+      - uses: actions/upload-pages-artifact@a753861a5debcf57bf8b404356158c8e1e33150c # v2
         with:
           path: docs/
-      - uses: actions/deploy-pages@v2
+      - uses: actions/deploy-pages@9dbe3824824f8a1377b8e298bafde1a50ede43e5 # v2
         id: deploy
