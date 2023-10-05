@@ -17,7 +17,7 @@ github.com/aymanbagabas/go-osc52/v2
 # github.com/charmbracelet/lipgloss v0.8.0
 ## explicit; go 1.17
 github.com/charmbracelet/lipgloss
-# github.com/charmbracelet/log v0.2.4
+# github.com/charmbracelet/log v0.2.5
 ## explicit; go 1.17
 github.com/charmbracelet/log
 # github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964

@@ -106,7 +106,7 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	}
 
 	// WriteTo will reset the buffer
-	l.b.WriteTo(l.w) // nolint: errcheck
+	l.b.WriteTo(l.w) //nolint: errcheck
 }
 
 // Helper marks the calling function as a helper
@@ -280,6 +280,12 @@ func (l *Logger) SetCallerOffset(offset int) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.callerOffset = offset
+}
+
+// SetColorProfile force sets the underlying Lip Gloss renderer color profile
+// for the TextFormatter.
+func (l *Logger) SetColorProfile(profile termenv.Profile) {
+	l.re.SetColorProfile(profile)
 }
 
 // With returns a new logger with the given keyvals added.
