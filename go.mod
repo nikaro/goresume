@@ -7,7 +7,7 @@ require (
 	github.com/charmbracelet/log v0.2.5
 	github.com/gomarkdown/markdown v0.0.0-20230922112808-5421fefb8386
 	github.com/kataras/i18n v0.0.8
-	github.com/playwright-community/playwright-go v0.3700.0
+	github.com/playwright-community/playwright-go v0.3800.0
 	github.com/samber/lo v1.38.1
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/spf13/cobra v1.7.0
