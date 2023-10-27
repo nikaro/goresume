@@ -1,0 +1,3 @@
+[tool.commitizen]
+version = "0.1.4"
+update_changelog_on_bump = true

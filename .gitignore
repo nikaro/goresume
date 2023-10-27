@@ -19,3 +19,4 @@ dist/
 /resume.json
 *.pdf
 *.html
+_changelog.md
