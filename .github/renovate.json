@@ -4,9 +4,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^.pre-commit-hooks\\.yaml$"],
+      "fileMatch": ["^.pre-commit-config\\.yaml$"],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?\\s+.*:(?<currentValue>(?:\\d+)(?:\\.\\d+)*).*"
+        "# renovate: datasource=(?<datasource>[a-z-.]+?) depName=(?<depName>[^\\s]+?)(?: (?:lookupName|packageName)=(?<packageName>[^\\s]+?))?(?: versioning=(?<versioning>[a-z-0-9]+?))?\\s+.*:(?<currentValue>v?\\d+(?:\\.\\d+)*).*"
       ]
     }
   ]
