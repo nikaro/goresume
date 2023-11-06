@@ -13,12 +13,19 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/playwright-community/playwright-go/internal/multierror"
 )
 
 const (
-	playwrightCliVersion = "1.38.1"
-	baseURL              = "https://playwright.azureedge.net/builds/driver"
+	playwrightCliVersion = "1.39.0"
 )
+
+var playwrightCDNMirrors = []string{
+	"https://playwright.azureedge.net",
+	"https://playwright-akamai.azureedge.net",
+	"https://playwright-verizon.azureedge.net",
+}
 
 type PlaywrightDriver struct {
 	DriverDirectory, DriverBinaryLocation, Version string
@@ -134,19 +141,10 @@ func (d *PlaywrightDriver) DownloadDriver() error {
 	if d.options.Verbose {
 		log.Printf("Downloading driver to %s", d.DriverDirectory)
 	}
-	driverURL := d.getDriverURL()
-	resp, err := http.Get(driverURL)
-	if err != nil {
-		return fmt.Errorf("could not download driver: %w", err)
-	}
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("error: got non 200 status code: %d (%s)", resp.StatusCode, resp.Status)
-	}
-	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := downloadDriver(d.getDriverURLs())
 	if err != nil {
-		return fmt.Errorf("could not read response body: %w", err)
+		return err
 	}
 	zipReader, err := zip.NewReader(bytes.NewReader(body), int64(len(body)))
 	if err != nil {
@@ -310,7 +308,7 @@ func getDriverName() string {
 	panic("Not supported OS!")
 }
 
-func (d *PlaywrightDriver) getDriverURL() string {
+func (d *PlaywrightDriver) getDriverURLs() []string {
 	platform := ""
 	switch runtime.GOOS {
 	case "windows":
@@ -329,11 +327,20 @@ func (d *PlaywrightDriver) getDriverURL() string {
 		}
 	}
 
-	if d.isReleaseVersion() {
-		return fmt.Sprintf("%s/playwright-%s-%s.zip", baseURL, d.Version, platform)
+	baseURLs := []string{}
+	pattern := "%s/builds/driver/playwright-%s-%s.zip"
+	if !d.isReleaseVersion() {
+		pattern = "%s/next/builds/driver/playwright-%s-%s.zip"
 	}
 
-	return fmt.Sprintf("%s/next/playwright-%s-%s.zip", baseURL, d.Version, platform)
+	if hostEnv := os.Getenv("PLAYWRIGHT_DOWNLOAD_HOST"); hostEnv != "" {
+		baseURLs = append(baseURLs, fmt.Sprintf(pattern, hostEnv, d.Version, platform))
+	} else {
+		for _, mirror := range playwrightCDNMirrors {
+			baseURLs = append(baseURLs, fmt.Sprintf(pattern, mirror, d.Version, platform))
+		}
+	}
+	return baseURLs
 }
 
 // isReleaseVersion checks if the version is not a beta or alpha release
@@ -351,4 +358,26 @@ func makeFileExecutable(path string) error {
 		return fmt.Errorf("could not set permissions: %w", err)
 	}
 	return nil
+}
+
+func downloadDriver(driverURLs []string) (body []byte, e error) {
+	for _, driverURL := range driverURLs {
+		resp, err := http.Get(driverURL)
+		if err != nil {
+			e = multierror.Join(e, fmt.Errorf("could not download driver from %s: %w", driverURL, err))
+			continue
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			e = multierror.Join(e, fmt.Errorf("error: got non 200 status code: %d (%s) from %s", resp.StatusCode, resp.Status, driverURL))
+			continue
+		}
+		body, err = io.ReadAll(resp.Body)
+		if err != nil {
+			e = multierror.Join(e, fmt.Errorf("could not read response body: %w", err))
+			continue
+		}
+		return body, nil
+	}
+	return nil, e
 }
