@@ -1,3 +1,9 @@
+## 0.2.1 (2023-11-06)
+
+### Fix
+
+- **deps**: update module github.com/spf13/cobra to v1.8.0 (#45)
+
 ## 0.2.0 (2023-10-27)
 
 ### Fix
