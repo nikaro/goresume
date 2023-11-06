@@ -37,7 +37,7 @@ func (p *pageImpl) Close(options ...PageCloseOptions) error {
 	if err == nil && p.ownedContext != nil {
 		err = p.ownedContext.Close()
 	}
-	if isSafeCloseError(err) || (len(options) == 1 && *(options[0].RunBeforeUnload)) {
+	if isSafeCloseError(err) || (len(options) == 1 && options[0].RunBeforeUnload != nil && *(options[0].RunBeforeUnload)) {
 		return nil
 	}
 	return err
@@ -337,7 +337,6 @@ func (p *pageImpl) Screenshot(options ...PageScreenshotOptions) ([]byte, error) 
 				}
 			}
 			overrides["mask"] = masks
-			options[0].Mask = nil
 		}
 	}
 	data, err := p.channel.Send("screenshot", options, overrides)
@@ -358,7 +357,7 @@ func (p *pageImpl) Screenshot(options ...PageScreenshotOptions) ([]byte, error) 
 
 func (p *pageImpl) PDF(options ...PagePdfOptions) ([]byte, error) {
 	var path *string
-	if len(options) > 0 {
+	if len(options) == 1 {
 		path = options[0].Path
 	}
 	data, err := p.channel.Send("pdf", options)
@@ -1036,7 +1035,7 @@ func (p *pageImpl) Pause() (err error) {
 	p.browserContext.SetDefaultTimeout(0)
 	select {
 	case <-p.closedOrCrashed:
-		err = fmt.Errorf("Page is closed or crashed")
+		err = fmt.Errorf(errMsgBrowserOrContextClosed)
 	case err = <-p.browserContext.pause():
 	}
 	if err != nil {
