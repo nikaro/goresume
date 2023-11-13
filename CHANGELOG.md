@@ -1,3 +1,9 @@
+## 0.2.3 (2023-11-13)
+
+### Fix
+
+- **deps**: update module github.com/charmbracelet/log to v0.3.0 (#49)
+
 ## 0.2.2 (2023-11-06)
 
 ### Fix
