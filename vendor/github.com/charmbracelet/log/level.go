@@ -1,23 +1,28 @@
 package log
 
-import "strings"
+import (
+	"errors"
+	"fmt"
+	"math"
+	"strings"
+)
 
 // Level is a logging level.
 type Level int32
 
 const (
 	// DebugLevel is the debug level.
-	DebugLevel Level = iota - 1
+	DebugLevel Level = -4
 	// InfoLevel is the info level.
-	InfoLevel
+	InfoLevel Level = 0
 	// WarnLevel is the warn level.
-	WarnLevel
+	WarnLevel Level = 4
 	// ErrorLevel is the error level.
-	ErrorLevel
+	ErrorLevel Level = 8
 	// FatalLevel is the fatal level.
-	FatalLevel
+	FatalLevel Level = 12
 	// noLevel is used with log.Print.
-	noLevel
+	noLevel Level = math.MaxInt32
 )
 
 // String returns the string representation of the level.
@@ -38,20 +43,23 @@ func (l Level) String() string {
 	}
 }
 
+// ErrInvalidLevel is an error returned when parsing an invalid level string.
+var ErrInvalidLevel = errors.New("invalid level")
+
 // ParseLevel converts level in string to Level type. Default level is InfoLevel.
-func ParseLevel(level string) Level {
+func ParseLevel(level string) (Level, error) {
 	switch strings.ToLower(level) {
 	case DebugLevel.String():
-		return DebugLevel
+		return DebugLevel, nil
 	case InfoLevel.String():
-		return InfoLevel
+		return InfoLevel, nil
 	case WarnLevel.String():
-		return WarnLevel
+		return WarnLevel, nil
 	case ErrorLevel.String():
-		return ErrorLevel
+		return ErrorLevel, nil
 	case FatalLevel.String():
-		return FatalLevel
+		return FatalLevel, nil
 	default:
-		return InfoLevel
+		return 0, fmt.Errorf("%w: %q", ErrInvalidLevel, level)
 	}
 }

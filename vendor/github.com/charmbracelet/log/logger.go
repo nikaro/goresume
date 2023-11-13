@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/termenv"
@@ -46,6 +46,7 @@ type Logger struct {
 	fields []interface{}
 
 	helpers *sync.Map
+	styles  *Styles
 }
 
 func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
@@ -58,20 +59,40 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 		return
 	}
 
+	var frame runtime.Frame
+	if l.reportCaller {
+		// Skip log.log, the caller, and any offset added.
+		frames := l.frames(l.callerOffset + 2)
+		for {
+			f, more := frames.Next()
+			_, helper := l.helpers.Load(f.Function)
+			if !helper || !more {
+				// Found a frame that wasn't a helper function.
+				// Or we ran out of frames to check.
+				frame = f
+				break
+			}
+		}
+	}
+	l.handle(level, l.timeFunc(), []runtime.Frame{frame}, msg, keyvals...)
+}
+
+func (l *Logger) handle(level Level, ts time.Time, frames []runtime.Frame, msg interface{}, keyvals ...interface{}) {
 	var kvs []interface{}
-	if l.reportTimestamp {
-		kvs = append(kvs, TimestampKey, l.timeFunc())
+	if l.reportTimestamp && !ts.IsZero() {
+		kvs = append(kvs, TimestampKey, ts)
 	}
 
 	if level != noLevel {
 		kvs = append(kvs, LevelKey, level)
 	}
 
-	if l.reportCaller {
-		// Call stack is log.Error -> log.log (2)
-		file, line, fn := l.fillLoc(l.callerOffset + 2)
-		caller := l.callerFormatter(file, line, fn)
-		kvs = append(kvs, CallerKey, caller)
+	if l.reportCaller && len(frames) > 0 && frames[0].PC != 0 {
+		file, line, fn := l.location(frames)
+		if file != "" {
+			caller := l.callerFormatter(file, line, fn)
+			kvs = append(kvs, CallerKey, caller)
+		}
 	}
 
 	if l.prefix != "" {
@@ -79,8 +100,9 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	}
 
 	if msg != nil {
-		m := fmt.Sprint(msg)
-		kvs = append(kvs, MessageKey, m)
+		if m := fmt.Sprint(msg); m != "" {
+			kvs = append(kvs, MessageKey, m)
+		}
 	}
 
 	// append logger fields
@@ -88,6 +110,7 @@ func (l *Logger) log(level Level, msg interface{}, keyvals ...interface{}) {
 	if len(l.fields)%2 != 0 {
 		kvs = append(kvs, ErrMissingValue)
 	}
+
 	// append the rest
 	kvs = append(kvs, keyvals...)
 	if len(keyvals)%2 != 0 {
@@ -117,34 +140,32 @@ func (l *Logger) Helper() {
 }
 
 func (l *Logger) helper(skip int) {
-	_, _, fn := location(skip + 1)
-	l.helpers.LoadOrStore(fn, struct{}{})
+	var pcs [1]uintptr
+	// Skip runtime.Callers, and l.helper
+	n := runtime.Callers(skip+2, pcs[:])
+	frames := runtime.CallersFrames(pcs[:n])
+	frame, _ := frames.Next()
+	l.helpers.LoadOrStore(frame.Function, struct{}{})
 }
 
-func (l *Logger) fillLoc(skip int) (file string, line int, fn string) {
+// frames returns the runtime.Frames for the caller.
+func (l *Logger) frames(skip int) *runtime.Frames {
 	// Copied from testing.T
 	const maxStackLen = 50
 	var pc [maxStackLen]uintptr
 
-	// Skip two extra frames to account for this function
-	// and runtime.Callers itself.
+	// Skip runtime.Callers, and l.frame
 	n := runtime.Callers(skip+2, pc[:])
 	frames := runtime.CallersFrames(pc[:n])
-	for {
-		frame, more := frames.Next()
-		_, helper := l.helpers.Load(frame.Function)
-		if !helper || !more {
-			// Found a frame that wasn't a helper function.
-			// Or we ran out of frames to check.
-			return frame.File, frame.Line, frame.Function
-		}
-	}
+	return frames
 }
 
-func location(skip int) (file string, line int, fn string) {
-	pc, file, line, _ := runtime.Caller(skip + 1)
-	f := runtime.FuncForPC(pc)
-	return file, line, f.Name()
+func (l *Logger) location(frames []runtime.Frame) (file string, line int, fn string) {
+	if len(frames) == 0 {
+		return "", 0, ""
+	}
+	f := frames[0]
+	return f.File, f.Line, f.Function
 }
 
 // Cleanup a path by returning the last n segments of the path only.
@@ -248,7 +269,7 @@ func (l *Logger) SetOutput(w io.Writer) {
 	}
 	l.w = w
 	var isDiscard uint32
-	if w == ioutil.Discard {
+	if w == io.Discard {
 		isDiscard = 1
 	}
 	atomic.StoreUint32(&l.isDiscard, isDiscard)
@@ -288,15 +309,28 @@ func (l *Logger) SetColorProfile(profile termenv.Profile) {
 	l.re.SetColorProfile(profile)
 }
 
+// SetStyles sets the logger styles for the TextFormatter.
+func (l *Logger) SetStyles(s *Styles) {
+	if s == nil {
+		s = DefaultStyles()
+	}
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.styles = s
+}
+
 // With returns a new logger with the given keyvals added.
 func (l *Logger) With(keyvals ...interface{}) *Logger {
+	var st Styles
 	l.mu.Lock()
 	sl := *l
+	st = *l.styles
 	l.mu.Unlock()
 	sl.b = bytes.Buffer{}
 	sl.mu = &sync.RWMutex{}
 	sl.helpers = &sync.Map{}
 	sl.fields = append(l.fields, keyvals...)
+	sl.styles = &st
 	return &sl
 }
 

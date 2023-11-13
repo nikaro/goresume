@@ -55,6 +55,7 @@ func NewWithOptions(w io.Writer, o Options) *Logger {
 
 	l.SetOutput(w)
 	l.SetLevel(Level(l.level))
+	l.SetStyles(DefaultStyles())
 
 	if l.callerFormatter == nil {
 		l.callerFormatter = ShortCallerFormatter
@@ -132,6 +133,11 @@ func SetColorProfile(profile termenv.Profile) {
 	defaultLogger.SetColorProfile(profile)
 }
 
+// SetStyles sets the logger styles for the TextFormatter.
+func SetStyles(s *Styles) {
+	defaultLogger.SetStyles(s)
+}
+
 // GetPrefix returns the prefix for the default logger.
 func GetPrefix() string {
 	return defaultLogger.GetPrefix()
@@ -151,7 +157,6 @@ func WithPrefix(prefix string) *Logger {
 // and skips it for source location information.
 // It's the equivalent of testing.TB.Helper().
 func Helper() {
-	// skip this function frame
 	defaultLogger.helper(1)
 }
 
