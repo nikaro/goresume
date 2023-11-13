@@ -16,6 +16,8 @@ const (
 )
 
 func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline bool, key string) {
+	st := l.styles
+
 	// kindly borrowed from hclog
 	for {
 		nl := strings.IndexByte(str, '\n')
@@ -23,10 +25,10 @@ func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline boo
 			if str != "" {
 				_, _ = w.Write([]byte(indent))
 				val := escapeStringForOutput(str, false)
-				if valueStyle, ok := ValueStyles[key]; ok {
+				if valueStyle, ok := st.Values[key]; ok {
 					val = valueStyle.Renderer(l.re).Render(val)
 				} else {
-					val = ValueStyle.Renderer(l.re).Render(val)
+					val = st.Value.Renderer(l.re).Render(val)
 				}
 				_, _ = w.Write([]byte(val))
 				if newline {
@@ -38,7 +40,7 @@ func (l *Logger) writeIndent(w io.Writer, str string, indent string, newline boo
 
 		_, _ = w.Write([]byte(indent))
 		val := escapeStringForOutput(str[:nl], false)
-		val = ValueStyle.Renderer(l.re).Render(val)
+		val = st.Value.Renderer(l.re).Render(val)
 		_, _ = w.Write([]byte(val))
 		_, _ = w.Write([]byte{'\n'})
 		str = str[nl+1:]
@@ -75,7 +77,6 @@ func escapeStringForOutput(str string, escapeQuotes bool) string {
 	bb.Reset()
 
 	defer bufPool.Put(bb)
-
 	for _, r := range str {
 		if escapeQuotes && r == '"' {
 			bb.WriteString(`\"`)
@@ -124,65 +125,97 @@ func escapeStringForOutput(str string, escapeQuotes bool) string {
 	return bb.String()
 }
 
-// isNormal indicates if the rune is one allowed to exist as an unquoted
-// string value. This is a subset of ASCII, `-` through `~`.
-func isNormal(r rune) bool {
-	return '-' <= r && r <= '~'
-}
-
-// needsQuoting returns false if all the runes in string are normal, according
-// to isNormal.
-func needsQuoting(str string) bool {
-	for _, r := range str {
-		if !isNormal(r) {
+func needsQuoting(s string) bool {
+	for i := 0; i < len(s); {
+		b := s[i]
+		if b < utf8.RuneSelf {
+			if needsQuotingSet[b] {
+				return true
+			}
+			i++
+			continue
+		}
+		r, size := utf8.DecodeRuneInString(s[i:])
+		if r == utf8.RuneError || unicode.IsSpace(r) || !unicode.IsPrint(r) {
 			return true
 		}
+		i += size
 	}
-
 	return false
 }
 
+var needsQuotingSet = [utf8.RuneSelf]bool{
+	'"': true,
+	'=': true,
+}
+
+func init() {
+	for i := 0; i < utf8.RuneSelf; i++ {
+		r := rune(i)
+		if unicode.IsSpace(r) || !unicode.IsPrint(r) {
+			needsQuotingSet[i] = true
+		}
+	}
+}
+
+func writeSpace(w io.Writer, first bool) {
+	if !first {
+		w.Write([]byte{' '}) //nolint: errcheck
+	}
+}
+
 func (l *Logger) textFormatter(keyvals ...interface{}) {
-	for i := 0; i < len(keyvals); i += 2 {
+	st := l.styles
+	lenKeyvals := len(keyvals)
+
+	for i := 0; i < lenKeyvals; i += 2 {
+		firstKey := i == 0
+		moreKeys := i < lenKeyvals-2
+
 		switch keyvals[i] {
 		case TimestampKey:
 			if t, ok := keyvals[i+1].(time.Time); ok {
 				ts := t.Format(l.timeFormat)
-				ts = TimestampStyle.Renderer(l.re).Render(ts)
+				ts = st.Timestamp.Renderer(l.re).Render(ts)
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(ts)
-				l.b.WriteByte(' ')
 			}
 		case LevelKey:
 			if level, ok := keyvals[i+1].(Level); ok {
-				lvl := levelStyle(level).Renderer(l.re).String()
-				l.b.WriteString(lvl)
-				l.b.WriteByte(' ')
+				var lvl string
+				if lvlStyle, ok := st.Levels[level]; ok {
+					lvl = lvlStyle.Renderer(l.re).String()
+				}
+				if lvl != "" {
+					writeSpace(&l.b, firstKey)
+					l.b.WriteString(lvl)
+				}
 			}
 		case CallerKey:
 			if caller, ok := keyvals[i+1].(string); ok {
 				caller = fmt.Sprintf("<%s>", caller)
-				caller = CallerStyle.Renderer(l.re).Render(caller)
+				caller = st.Caller.Renderer(l.re).Render(caller)
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(caller)
-				l.b.WriteByte(' ')
 			}
 		case PrefixKey:
 			if prefix, ok := keyvals[i+1].(string); ok {
-				prefix = PrefixStyle.Renderer(l.re).Render(prefix + ":")
+				prefix = st.Prefix.Renderer(l.re).Render(prefix + ":")
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(prefix)
-				l.b.WriteByte(' ')
 			}
 		case MessageKey:
 			if msg := keyvals[i+1]; msg != nil {
 				m := fmt.Sprint(msg)
-				m = MessageStyle.Renderer(l.re).Render(m)
+				m = st.Message.Renderer(l.re).Render(m)
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(m)
 			}
 		default:
 			sep := separator
 			indentSep := indentSeparator
-			sep = SeparatorStyle.Renderer(l.re).Render(sep)
-			indentSep = SeparatorStyle.Renderer(l.re).Render(indentSep)
-			moreKeys := i < len(keyvals)-2
+			sep = st.Separator.Renderer(l.re).Render(sep)
+			indentSep = st.Separator.Renderer(l.re).Render(indentSep)
 			key := fmt.Sprint(keyvals[i])
 			val := fmt.Sprintf("%+v", keyvals[i+1])
 			raw := val == ""
@@ -193,14 +226,14 @@ func (l *Logger) textFormatter(keyvals ...interface{}) {
 				continue
 			}
 			actualKey := key
-			valueStyle := ValueStyle
-			if vs, ok := ValueStyles[actualKey]; ok {
+			valueStyle := st.Value
+			if vs, ok := st.Values[actualKey]; ok {
 				valueStyle = vs
 			}
-			if keyStyle, ok := KeyStyles[key]; ok {
+			if keyStyle, ok := st.Keys[key]; ok {
 				key = keyStyle.Renderer(l.re).Render(key)
 			} else {
-				key = KeyStyle.Renderer(l.re).Render(key)
+				key = st.Key.Renderer(l.re).Render(key)
 			}
 
 			// Values may contain multiple lines, and that format
@@ -215,19 +248,15 @@ func (l *Logger) textFormatter(keyvals ...interface{}) {
 				l.b.WriteString(key)
 				l.b.WriteString(sep + "\n")
 				l.writeIndent(&l.b, val, indentSep, moreKeys, actualKey)
-				// If there are more keyvals, separate them with a space.
-				if moreKeys {
-					l.b.WriteByte(' ')
-				}
 			} else if !raw && needsQuoting(val) {
-				l.b.WriteByte(' ')
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteString(valueStyle.Renderer(l.re).Render(fmt.Sprintf(`"%s"`,
 					escapeStringForOutput(val, true))))
 			} else {
 				val = valueStyle.Renderer(l.re).Render(val)
-				l.b.WriteByte(' ')
+				writeSpace(&l.b, firstKey)
 				l.b.WriteString(key)
 				l.b.WriteString(sep)
 				l.b.WriteString(val)
