@@ -1,3 +1,9 @@
+## 0.2.4 (2023-11-20)
+
+### Fix
+
+- **deps**: update github.com/gomarkdown/markdown digest to a660076 (#50)
+
 ## 0.2.3 (2023-11-13)
 
 ### Fix
