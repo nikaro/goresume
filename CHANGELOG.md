@@ -1,3 +1,9 @@
+## 0.2.5 (2023-11-22)
+
+### Fix
+
+- **deps**: bump github.com/go-jose/go-jose/v3 from 3.0.0 to 3.0.1 (#53)
+
 ## 0.2.4 (2023-11-20)
 
 ### Fix
