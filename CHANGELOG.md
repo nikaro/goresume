@@ -1,3 +1,9 @@
+## 0.2.7 (2023-12-04)
+
+### Fix
+
+- **deps**: update module github.com/samber/lo to v1.39.0 (#59)
+
 ## 0.2.6 (2023-11-27)
 
 ### Fix
