@@ -119,7 +119,7 @@ github.com/sagikazarmark/locafero
 # github.com/sagikazarmark/slog-shim v0.1.0
 ## explicit; go 1.20
 github.com/sagikazarmark/slog-shim
-# github.com/samber/lo v1.38.1
+# github.com/samber/lo v1.39.0
 ## explicit; go 1.18
 github.com/samber/lo
 # github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
