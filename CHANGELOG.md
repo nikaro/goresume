@@ -1,3 +1,9 @@
+## 0.2.12 (2023-12-25)
+
+### Fix
+
+- **deps**: update module github.com/playwright-community/playwright-go to v0.4001.0 (#67)
+
 ## 0.2.11 (2023-12-25)
 
 ### Fix
