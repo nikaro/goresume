@@ -1,3 +1,9 @@
+## 0.2.11 (2023-12-25)
+
+### Fix
+
+- **deps**: update module github.com/spf13/viper to v1.18.2 (#66)
+
 ## 0.2.10 (2023-12-25)
 
 ### Fix
