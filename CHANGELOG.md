@@ -1,3 +1,9 @@
+## 0.2.10 (2023-12-25)
+
+### Fix
+
+- **deps**: update github.com/gomarkdown/markdown digest to 1d6d208 (#65)
+
 ## 0.2.9 (2023-12-19)
 
 ### Fix
