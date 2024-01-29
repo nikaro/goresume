@@ -126,6 +126,7 @@ func (r *requestImpl) Failure() error {
 func (r *requestImpl) Timing() *RequestTiming {
 	return r.timing
 }
+
 func (r *requestImpl) AllHeaders() (map[string]string, error) {
 	headers, err := r.ActualHeaders()
 	if err != nil {
@@ -133,6 +134,7 @@ func (r *requestImpl) AllHeaders() (map[string]string, error) {
 	}
 	return headers.Headers(), nil
 }
+
 func (r *requestImpl) HeadersArray() ([]NameValue, error) {
 	headers, err := r.ActualHeaders()
 	if err != nil {
@@ -140,6 +142,7 @@ func (r *requestImpl) HeadersArray() ([]NameValue, error) {
 	}
 	return headers.HeadersArray(), nil
 }
+
 func (r *requestImpl) HeaderValue(name string) (string, error) {
 	headers, err := r.ActualHeaders()
 	if err != nil {
@@ -147,6 +150,7 @@ func (r *requestImpl) HeaderValue(name string) (string, error) {
 	}
 	return headers.Get(name), err
 }
+
 func (r *requestImpl) HeaderValues(name string) ([]string, error) {
 	headers, err := r.ActualHeaders()
 	if err != nil {
@@ -154,6 +158,7 @@ func (r *requestImpl) HeaderValues(name string) ([]string, error) {
 	}
 	return headers.GetAll(name), err
 }
+
 func (r *requestImpl) ActualHeaders() (*rawHeaders, error) {
 	if r.fallbackOverrides.Headers != nil {
 		return newRawHeaders(serializeMapToNameAndValue(r.fallbackOverrides.Headers)), nil
@@ -216,15 +221,11 @@ func (r *requestImpl) applyFallbackOverrides(options RouteFallbackOptions) {
 }
 
 func (r *requestImpl) targetClosed() <-chan error {
-	channel := fromNullableChannel(r.initializer["frame"])
-	if channel == nil {
+	page := r.safePage()
+	if page == nil {
 		return make(<-chan error, 1)
 	}
-	frame, ok := channel.(*frameImpl)
-	if !ok || frame.page == nil {
-		return make(<-chan error, 1)
-	}
-	return frame.page.closedOrCrashed
+	return page.closedOrCrashed
 }
 
 func (r *requestImpl) setResponseEndTiming(t float64) {
@@ -232,6 +233,18 @@ func (r *requestImpl) setResponseEndTiming(t float64) {
 	if r.timing.ResponseStart == -1 {
 		r.timing.ResponseStart = t
 	}
+}
+
+func (r *requestImpl) safePage() *pageImpl {
+	channel := fromNullableChannel(r.initializer["frame"])
+	if channel == nil {
+		return nil
+	}
+	frame, ok := channel.(*frameImpl)
+	if !ok {
+		return nil
+	}
+	return frame.page
 }
 
 func newRequest(parent *channelOwner, objectType string, guid string, initializer map[string]interface{}) *requestImpl {
