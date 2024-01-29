@@ -22,7 +22,9 @@ github.com/charmbracelet/lipgloss
 github.com/charmbracelet/log
 # github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964
 ## explicit
-github.com/danwakefield/fnmatch
+# github.com/deckarep/golang-set/v2 v2.6.0
+## explicit; go 1.18
+github.com/deckarep/golang-set/v2
 # github.com/fsnotify/fsnotify v1.7.0
 ## explicit; go 1.17
 github.com/fsnotify/fsnotify
@@ -106,7 +108,7 @@ github.com/pelletier/go-toml/v2/internal/characters
 github.com/pelletier/go-toml/v2/internal/danger
 github.com/pelletier/go-toml/v2/internal/tracker
 github.com/pelletier/go-toml/v2/unstable
-# github.com/playwright-community/playwright-go v0.4001.0
+# github.com/playwright-community/playwright-go v0.4101.0
 ## explicit; go 1.19
 github.com/playwright-community/playwright-go
 github.com/playwright-community/playwright-go/internal/multierror
@@ -173,7 +175,7 @@ golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/scrypt
-# golang.org/x/exp v0.0.0-20231006140011-7918f672742d
+# golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc
 ## explicit; go 1.20
 golang.org/x/exp/constraints
 golang.org/x/exp/slices

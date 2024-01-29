@@ -10,9 +10,7 @@ import (
 
 const fileSizeLimitInBytes = 50 * 1024 * 1024
 
-var (
-	ErrInputFilesSizeExceeded = errors.New("Cannot set buffer larger than 50Mb, please write it to a file and pass its path instead.")
-)
+var ErrInputFilesSizeExceeded = errors.New("Cannot set buffer larger than 50Mb, please write it to a file and pass its path instead.")
 
 type inputFiles struct {
 	Selector   *string             `json:"selector,omitempty"`
@@ -26,7 +24,7 @@ type inputFiles struct {
 //   - files should be one of: string, []string, InputFile, []InputFile,
 //     string: local file path
 func convertInputFiles(files interface{}, context *browserContextImpl) (*inputFiles, error) {
-	var converted = &inputFiles{}
+	converted := &inputFiles{}
 	switch items := files.(type) {
 	case InputFile:
 		if sizeOfInputFiles([]InputFile{items}) > fileSizeLimitInBytes {
@@ -52,10 +50,12 @@ func convertInputFiles(files interface{}, context *browserContextImpl) (*inputFi
 			if err != nil {
 				return nil, fmt.Errorf("failed to get last modified time of %s: %w", file, err)
 			}
-			result, err := context.channel.Send("createTempFile", map[string]interface{}{
-				"name":           filepath.Base(file),
-				"lastModifiedMs": lastModifiedMs,
-			})
+			result, err := context.connection.WrapAPICall(func() (interface{}, error) {
+				return context.channel.Send("createTempFile", map[string]interface{}{
+					"name":           filepath.Base(file),
+					"lastModifiedMs": lastModifiedMs,
+				})
+			}, true)
 			if err != nil {
 				return nil, err
 			}
