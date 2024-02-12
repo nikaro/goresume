@@ -44,18 +44,11 @@ repos:
 
   - repo: local
     hooks:
-      - id: goreleaser-check
-        name: goreleaser-check
-        # renovate: datasource=docker depName=goreleaser/goreleaser
-        entry: goreleaser/goreleaser:v1.23.0
-        args: [check]
-        language: docker_image
-        files: ^\.goreleaser\.yml$
-
-  - repo: https://github.com/golangci/golangci-lint
-    rev: v1.55.2
-    hooks:
-      - id: golangci-lint
+      - id: make-lint
+        name: make lint
+        language: system
+        types: [go]
+        entry: make lint
 
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v3.14.1

@@ -67,12 +67,14 @@ format: ## Runs goimports on the project
 .PHONY: lint
 lint: ## Run linters
 	@echo "Linting..."
-	golangci-lint run
+	go vet ./...
+	go fix ./...
+	staticcheck ./...
 
 .PHONY: test
 test: ## Runs go test
 	@echo "Testing..."
-	go test ./...
+	go test -v ./...
 
 .PHONY: docs
 docs: ## Generate doc page
