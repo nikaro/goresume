@@ -11,6 +11,7 @@ on:
       - .pre-commit-config.yaml
       - .yamllint.yml
       - CHANGELOG.md
+      - Makefile
   workflow_dispatch:
 
 env:
