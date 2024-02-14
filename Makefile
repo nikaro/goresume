@@ -62,7 +62,7 @@ uninstall: ## Uninstall the application
 .PHONY: format
 format: ## Runs goimports on the project
 	@echo "Formatting..."
-	find . -type f -name '*.go' -not -path './vendor/*' | xargs goimports -l -w
+	go fmt ./...
 
 .PHONY: lint
 lint: ## Run linters
