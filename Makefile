@@ -12,16 +12,10 @@ VERSION = $(shell git describe --always --dirty)
 .PHONY: all
 all: build
 
-.PHONY: setup
-setup: ## Setup go modules
-	go get -u all
-	go mod tidy
-	go mod vendor
-
 .PHONY: build
 build: ## Build for the current target
 	@echo "Building..."
-	env CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -mod vendor -ldflags="-s -w -X 'main.version=${VERSION}'" -o build/${APP}-${GOOS}-${GOARCH} .
+	env CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH} go build -ldflags="-s -w -X 'main.version=${VERSION}'" -o build/${APP}-${GOOS}-${GOARCH} .
 
 .PHONY: completion
 completion: ## Build completions
