@@ -1,3 +1,58 @@
+## 0.3.0 (2024-03-04)
+
+### Fix
+
+- **deps**: update module github.com/playwright-community/playwright-go to v0.4102.0 (#85)
+
+## 0.2.14 (2024-02-05)
+
+### Fix
+
+- **deps**: update module github.com/playwright-community/playwright-go to v0.4101.1 (#75)
+
+## 0.2.13 (2024-01-29)
+
+### Fix
+
+- **deps**: update module github.com/playwright-community/playwright-go to v0.4101.0 (#74)
+
+## 0.2.12 (2023-12-25)
+
+### Fix
+
+- **deps**: update module github.com/playwright-community/playwright-go to v0.4001.0 (#67)
+- **deps**: update module github.com/spf13/viper to v1.18.2 (#66)
+
+## 0.2.10 (2023-12-25)
+
+### Fix
+
+- **deps**: update github.com/gomarkdown/markdown digest to 1d6d208 (#65)
+
+## 0.2.9 (2023-12-19)
+
+### Fix
+
+- **deps**: bump golang.org/x/crypto from 0.16.0 to 0.17.0 (#64)
+
+## 0.2.8 (2023-12-11)
+
+### Fix
+
+- **deps**: update module github.com/spf13/viper to v1.18.1 (#61)
+
+## 0.2.7 (2023-12-04)
+
+### Fix
+
+- **deps**: update module github.com/samber/lo to v1.39.0 (#59)
+
+## 0.2.6 (2023-11-27)
+
+### Fix
+
+- **deps**: update module github.com/charmbracelet/log to v0.3.1 (#56)
+
 ## 0.2.15 (2024-03-04)
 
 ### Fix
