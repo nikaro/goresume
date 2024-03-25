@@ -1,3 +1,9 @@
+## 0.3.3 (2024-03-25)
+
+### Fix
+
+- **deps**: update module github.com/charmbracelet/log to v0.4.0 (#95)
+
 ## 0.3.2 (2024-03-25)
 
 ### Fix
