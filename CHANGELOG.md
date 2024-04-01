@@ -1,3 +1,9 @@
+## 0.3.4 (2024-04-01)
+
+### Fix
+
+- **deps**: update github.com/gomarkdown/markdown digest to 4d01890 (#96)
+
 ## 0.3.3 (2024-03-25)
 
 ### Fix
