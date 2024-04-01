@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/charmbracelet/log v0.4.0
-	github.com/gomarkdown/markdown v0.0.0-20231222211730-1d6d20845b47
+	github.com/gomarkdown/markdown v0.0.0-20240328165702-4d01890c35c0
 	github.com/kataras/i18n v0.0.8
 	github.com/playwright-community/playwright-go v0.4201.1
 	github.com/samber/lo v1.39.0
