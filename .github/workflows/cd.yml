@@ -13,7 +13,7 @@ on:
 
 env:
   # renovate: datasource=pypi depName=commitizen
-  COMMITIZEN_VERSION: 3.24.0
+  COMMITIZEN_VERSION: 3.25.0
   # renovate: datasource=github-releases depName=jgm/pandoc
   PANDOC_VERSION: 3.1.13
 
@@ -63,7 +63,7 @@ jobs:
 
       - name: Setup Go
         if: steps.check-tag.outputs.bump == 'true'
-        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
         with:
           cache: true
           check-latest: true
@@ -100,7 +100,7 @@ jobs:
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
 
       - name: Setup Go
-        uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+        uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
         with:
           cache: true
           check-latest: true
