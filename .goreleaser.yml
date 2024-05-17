@@ -20,19 +20,6 @@ aurs:
     private_key: "{{ .Env.AUR_KEY }}"
     git_url: "ssh://aur@aur.archlinux.org/goresume-bin.git"
 
-brews:
-  - homepage: "https://github.con/nikaro/goresume"
-    description: "Build HTML/PDF resume from JSON/YAML/TOML"
-    license: "MIT"
-    repository:
-      owner: "nikaro"
-      name: "homebrew-tap"
-      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
-    folder: "Formula"
-    install: |-
-      bin.install "goresume"
-      generate_completions_from_executable(bin/"goresume", "completion")
-
 nfpms:
   - homepage: "https://github.con/nikaro/goresume"
     description: "Build HTML/PDF resume from JSON/YAML/TOML."
