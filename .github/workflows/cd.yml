@@ -1,21 +1,9 @@
 name: CD
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - go.*
-      - "*.go"
-      - docs/**
-      - locales/**
-      - themes/**
+  schedule:
+    - cron: "0 0 * * 3"
   workflow_dispatch:
-
-env:
-  # renovate: datasource=pypi depName=commitizen
-  COMMITIZEN_VERSION: 3.26.0
-  # renovate: datasource=github-releases depName=jgm/pandoc
-  PANDOC_VERSION: 3.2
 
 jobs:
   ci:
@@ -26,7 +14,6 @@ jobs:
   release:
     name: Release
     needs: [ci]
-    if: "!startsWith(github.event.head_commit.message, 'bump:')"
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -45,20 +32,19 @@ jobs:
         with:
           github_token: ${{ github.token }}
           changelog_increment_filename: _changelog.md
-          commitizen_version: ${{ env.COMMITIZEN_VERSION }}
           dry_run: true
 
       - name: Bump
+        id: cz
         uses: commitizen-tools/commitizen-action@1f11eb222996406681d2bfa1eb3d997eca46557c # 0.21.0
         with:
           github_token: ${{ github.token }}
           changelog_increment_filename: _changelog.md
-          commitizen_version: ${{ env.COMMITIZEN_VERSION }}
 
       - name: Check if version bumped
         id: check-tag
         run: |
-          [ "${{ steps.latest-tag.outputs.tag }}" != "${{ env.REVISION }}" ] && bump=true
+          [ "${{ steps.latest-tag.outputs.tag }}" != "${{ steps.cz.outputs.version }}" ] && bump=true
           echo "bump=$bump" >> "$GITHUB_OUTPUT"
 
       - name: Setup Go
@@ -105,8 +91,12 @@ jobs:
           check-latest: true
           go-version-file: go.mod
 
+      - name: Get latest pandoc release
+        id: latest-pandoc-release
+        run: gh release view --repo jgm/pandoc --json assets --jq '.assets[].url' | grep amd64.deb | xargs -I {} echo url={} >> "GITHUB_OUTPUT"
+
       - name: Install pandoc
-        run: ansible -b -m apt -a deb=https://github.com/jgm/pandoc/releases/download/${{ env.PANDOC_VERSION }}/pandoc-${{ env.PANDOC_VERSION }}-1-amd64.deb localhost
+        run: ansible -b -m apt -a deb=${{ steps.latest-pandoc-release.outputs.url }} localhost
 
       - name: Generate docs
         run: make docs
