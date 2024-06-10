@@ -1,17 +1,20 @@
 module github.com/nikaro/goresume
 
-go 1.19
+go 1.21
+
+toolchain go1.22.4
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.3
 	github.com/charmbracelet/log v0.4.0
 	github.com/gomarkdown/markdown v0.0.0-20240419095408-642f0ee99ae2
 	github.com/kataras/i18n v0.0.8
-	github.com/playwright-community/playwright-go v0.4201.1
+	github.com/playwright-community/playwright-go v0.4401.0
 	github.com/samber/lo v1.39.0
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
+	github.com/santhosh-tekuri/jsonschema/v6 v6.0.1
 	github.com/spf13/cobra v1.8.0
-	github.com/spf13/viper v1.18.2
+	github.com/spf13/viper v1.19.0
 )
 
 require (
