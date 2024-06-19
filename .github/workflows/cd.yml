@@ -9,11 +9,13 @@ on:
 jobs:
   ci:
     name: CI
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
     uses: ./.github/workflows/ci.yml
     secrets: inherit
 
   release:
     name: Release
+    if: "!startsWith(github.event.head_commit.message, 'bump:')"
     needs: [ci]
     runs-on: ubuntu-latest
     permissions:
@@ -43,13 +45,14 @@ jobs:
           changelog_increment_filename: _changelog.md
 
       - name: Check if version bumped
+        if: steps.cz.outputs.version
         id: check-tag
         run: |
-          [ "${{ steps.latest-tag.outputs.tag }}" != "${{ steps.cz.outputs.version }}" ] && bump=true
-          echo "bump=$bump" >> "$GITHUB_OUTPUT"
+          [ "${{ steps.latest-tag.outputs.tag }}" != "${{ steps.cz.outputs.version }}" ] && \
+            echo bump=true >> "$GITHUB_OUTPUT"
 
       - name: Setup Go
-        if: steps.check-tag.outputs.bump == 'true'
+        if: steps.check-tag.outputs.bump
         uses: actions/setup-go@cdcb36043654635271a94b9a6d1392de5bb323a7 # v5.0.1
         with:
           cache: true
@@ -57,7 +60,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Run GoReleaser
-        if: steps.check-tag.outputs.bump == 'true'
+        if: steps.check-tag.outputs.bump
         uses: goreleaser/goreleaser-action@286f3b13b1b49da4ac219696163fb8c1c93e1200 # v6.0.0
         with:
           args: release --clean --release-notes _changelog.md
