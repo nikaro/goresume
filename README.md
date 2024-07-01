@@ -75,4 +75,4 @@ goresume comes with a few embeded themes:
 
 You can also use your own themes, by creating a `themes/my-theme.html` file
 next to your `resume.json`. goresume use [Go template engine](https://pkg.go.dev/text/template)
-augmented with [sprig functions](http://masterminds.github.io/sprig/).
+augmented with [sprout functions](https://docs.atom.codes/sprout).
