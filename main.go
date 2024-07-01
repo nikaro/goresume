@@ -12,14 +12,13 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/Masterminds/sprig/v3"
 	"github.com/charmbracelet/log"
+	"github.com/go-sprout/sprout"
 	"github.com/gomarkdown/markdown"
 	"github.com/kataras/i18n"
 	"github.com/playwright-community/playwright-go"
 	"github.com/samber/lo"
-	"github.com/santhosh-tekuri/jsonschema/v5"
-	_ "github.com/santhosh-tekuri/jsonschema/v5/httploader"
+	"github.com/santhosh-tekuri/jsonschema/v6"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -142,7 +141,14 @@ func root(_ *cobra.Command, _ []string) {
 }
 
 func validate(_ *cobra.Command, _ []string) {
-	jsonSchema, errLoadSchema := jsonschema.Compile(viper.GetString("$schema"))
+	loader := jsonschema.SchemeURLLoader{
+		"file":  jsonschema.FileLoader{},
+		"http":  newHTTPURLLoader(false),
+		"https": newHTTPURLLoader(false),
+	}
+	c := jsonschema.NewCompiler()
+	c.UseLoader(loader)
+	jsonSchema, errLoadSchema := c.Compile(viper.GetString("$schema"))
 	check(errLoadSchema)
 	check(jsonSchema.Validate(viper.AllSettings()))
 }
@@ -163,7 +169,7 @@ func getTemplate(theme string) *bytes.Buffer {
 		}
 	}()
 	templates, errTemplate := template.New("html").
-		Funcs(sprig.FuncMap()).
+		Funcs(sprout.FuncMap()).
 		Funcs(templatesFn).
 		Parse(themeTemplate)
 	check(errTemplate)
