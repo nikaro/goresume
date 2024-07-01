@@ -1,3 +1,9 @@
+## 0.3.11 (2024-07-01)
+
+### Fix
+
+- **deps**: update module github.com/santhosh-tekuri/jsonschema/v5 to v6 (#124)
+
 ## 0.3.10 (2024-07-01)
 
 ### Fix
