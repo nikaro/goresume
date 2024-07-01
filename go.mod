@@ -11,7 +11,6 @@ require (
 	github.com/kataras/i18n v0.0.8
 	github.com/playwright-community/playwright-go v0.4401.1
 	github.com/samber/lo v1.44.0
-	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
