@@ -16,7 +16,7 @@ jobs:
   release:
     name: Release
     needs: [ci]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: write
     steps:
@@ -26,7 +26,6 @@ jobs:
           fetch-depth: 0
 
       - name: Dry run
-        id: cz-dry
         continue-on-error: true
         uses: commitizen-tools/commitizen-action@1f11eb222996406681d2bfa1eb3d997eca46557c # 0.21.0
         with:
@@ -39,7 +38,6 @@ jobs:
           echo "previous: ${{ env.PREVIOUS_REVISION }}, current: ${{ env.REVISION }}"
 
       - name: Bump
-        id: cz
         if: env.PREVIOUS_REVISION != env.REVISION
         uses: commitizen-tools/commitizen-action@1f11eb222996406681d2bfa1eb3d997eca46557c # 0.21.0
         with:
