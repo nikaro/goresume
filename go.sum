@@ -74,6 +74,8 @@ github.com/playwright-community/playwright-go v0.4401.1 h1:3EMTn9HUGETP3vjZLrVVN
 github.com/playwright-community/playwright-go v0.4401.1/go.mod h1:bpArn5TqNzmP0jroCgw4poSOG9gSeQg490iLqWAaa7w=
 github.com/playwright-community/playwright-go v0.4501.0 h1:/WhOJ+xgW/9HjzOTV9tMCG91QnTk1lnq9gSpctg8hdw=
 github.com/playwright-community/playwright-go v0.4501.0/go.mod h1:bpArn5TqNzmP0jroCgw4poSOG9gSeQg490iLqWAaa7w=
+github.com/playwright-community/playwright-go v0.4501.1 h1:kz8SIfR6nEI8blk77nTVD0K5/i37QP5rY/o8a1fG+4c=
+github.com/playwright-community/playwright-go v0.4501.1/go.mod h1:bpArn5TqNzmP0jroCgw4poSOG9gSeQg490iLqWAaa7w=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 h1:Jamvg5psRIccs7FGNTlIRMkT8wgtp5eCXdBlqhYGL6U=
 github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
