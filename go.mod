@@ -7,7 +7,7 @@ toolchain go1.22.5
 require (
 	github.com/charmbracelet/log v0.4.0
 	github.com/go-sprout/sprout v0.4.1
-	github.com/gomarkdown/markdown v0.0.0-20240626202925-2eda941fd024
+	github.com/gomarkdown/markdown v0.0.0-20240723152757-afa4a469d4f9
 	github.com/kataras/i18n v0.0.8
 	github.com/playwright-community/playwright-go v0.4501.1
 	github.com/samber/lo v1.46.0
