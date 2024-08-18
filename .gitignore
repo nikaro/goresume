@@ -17,6 +17,7 @@ dist/
 /resume.toml
 /resume.yaml
 /resume.json
-*.pdf
-*.html
+/resume.html
+/resume.pdf
 _changelog.md
+.task/

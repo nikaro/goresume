@@ -1,0 +1,675 @@
+<!doctype html>
+<!--
+    Author: David Carvajal
+    Source: https://github.com/davcd/jsonresume-theme-actual
+-->
+<html lang='en'>
+
+<head>
+  <meta charset="utf-8">
+  <style>
+    @charset "UTF-8";
+
+    /* Workaround for 'break-before:avoid' */
+    * {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      font-size: 100%;
+    }
+
+    ul,
+    li {
+      margin: 0;
+      padding: 0;
+    }
+
+    span,
+    q {
+      display: block;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    @page {
+      size: A4;
+      margin: 15mm 0 20mm 0;
+    }
+
+    @page :first {
+      margin-top: 10mm;
+    }
+
+    a {
+      color: #222222;
+      font-weight: inherit;
+      text-decoration: none;
+    }
+
+    a[href] {
+      text-decoration: underline;
+      text-decoration-color: #888888;
+    }
+
+    p,
+    q {
+      line-height: 1.25em;
+    }
+
+    li {
+      line-height: 1.35em;
+    }
+
+    li:first-child {
+      margin-top: 0;
+    }
+
+    .content {
+      width: 1000px;
+      height: auto;
+      padding: 0 50px;
+      margin: 0 auto;
+      font-family: Helvetica, Arial, sans-serif;
+      color: #222222;
+    }
+
+    .table {
+      width: 100%;
+      display: table;
+    }
+
+    .table .main {
+      display: table-cell;
+      width: 70%;
+      padding-right: 50px;
+    }
+
+    .table .side {
+      display: table-cell;
+      width: 30%;
+      padding-left: 50px;
+      text-align: right;
+    }
+
+    .summary {
+      font-size: 15px;
+    }
+
+    .summary:empty {
+      display: none;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: normal;
+      margin: 0 0 20px 0;
+    }
+
+    .margin-container-2:not(:first-child) {
+      margin-top: 20px;
+    }
+
+    .margin-container-3:not(:first-child) {
+      margin-top: 30px;
+    }
+
+    .margin-container-4:not(:first-child) {
+      margin-top: 50px;
+    }
+
+    .padding-container-2 {
+      padding: 20px 0;
+    }
+
+    .margin-text-1 {
+      margin-top: 2px;
+    }
+
+    .margin-text-1:empty {
+      display: none;
+    }
+
+    .margin-text-2 {
+      margin-top: 4px;
+    }
+
+    .margin-text-2:empty {
+      display: none;
+    }
+
+    .margin-text-3 {
+      margin-top: 6px;
+    }
+
+    .margin-text-3:empty {
+      display: none;
+    }
+
+    .margin-text-4 {
+      margin-top: 8px;
+    }
+
+    .margin-text-4:empty {
+      display: none;
+    }
+
+    .margin-text-5 {
+      margin-top: 14px;
+    }
+
+    .margin-text-5:empty {
+      display: none;
+    }
+
+    .no-break {
+      break-inside: avoid;
+    }
+
+    .no-alone-1 {
+      break-inside: avoid;
+    }
+
+    .no-alone-1::after {
+      content: "";
+      display: block;
+      height: 75px;
+      margin-bottom: -75px;
+    }
+
+    .no-alone-2 {
+      break-inside: avoid;
+    }
+
+    .no-alone-2::after {
+      content: "";
+      display: block;
+      height: 150px;
+      margin-bottom: -150px;
+    }
+
+    .markdown h1 {
+      font-size: 160%;
+      font-weight: bolder;
+    }
+
+    .markdown h2 {
+      font-size: 150%;
+      font-weight: bolder;
+    }
+
+    .markdown h3 {
+      font-size: 140%;
+      font-weight: bolder;
+    }
+
+    .markdown h4 {
+      font-size: 130%;
+      font-weight: bold;
+    }
+
+    .markdown h5 {
+      font-size: 120%;
+      font-weight: bold;
+    }
+
+    .markdown h6 {
+      font-size: 110%;
+      font-weight: bold;
+    }
+
+    .markdown ul,
+    .markdown ol {
+      margin-left: 20px;
+    }
+
+    .markdown img {
+      display: block;
+      margin: 20px auto;
+      max-width: 1000px;
+      text-align: center;
+    }
+
+    .markdown blockquote {
+      margin: 20px 0;
+      padding: 15px 20px;
+    }
+
+    .markdown blockquote p {
+      display: inline;
+    }
+
+    .markdown code {
+      font-family: monospace;
+    }
+
+    .main .highlights {
+      width: auto;
+      display: block;
+      padding: 0 10px;
+      margin-bottom: 0;
+      columns: 2;
+      column-width: 310px;
+      column-gap: 10px;
+    }
+
+    .main .highlights li {
+      font-size: 14px;
+      list-style: none;
+    }
+
+    .main .highlights li:before {
+      content: "· ";
+      vertical-align: middle;
+    }
+
+    .main .left {
+      display: table-cell;
+    }
+
+    .main .left .title {
+      font-size: 18px;
+      font-weight: bold;
+      display: block;
+    }
+
+    .main .left .subtitle {
+      font-size: 16px;
+      font-weight: lighter;
+      display: block;
+    }
+
+    .main .right {
+      text-align: right;
+      display: table-cell;
+    }
+
+    .main .right .date {
+      font-size: 15px;
+      font-weight: lighter;
+      white-space: nowrap;
+    }
+
+    .basics .main {
+      vertical-align: middle;
+    }
+
+    .basics .main .name {
+      font-size: 80px;
+      line-height: 1em;
+      font-weight: bold;
+      display: block;
+      margin-left: -5.6px;
+    }
+
+    .basics .main .label {
+      font-size: 40px;
+      line-height: 1em;
+      font-weight: lighter;
+      display: block;
+      margin-left: -1.6px;
+    }
+
+    .basics .side {
+      vertical-align: middle;
+      padding-left: 0;
+      padding-top: 15px;
+    }
+
+    .basics .side .contact {
+      list-style-type: none;
+    }
+
+    .basics .side .contact li {
+      font-size: 18px;
+      line-height: 1.6em;
+    }
+
+    .links ul {
+      list-style: none;
+    }
+
+    .links ul li {
+      font-size: 14px;
+    }
+
+    .education .title {
+      font-size: 15px;
+    }
+
+    .education .institution {
+      font-size: 15px;
+      font-weight: lighter;
+    }
+
+    .awards .header .title {
+      font-size: 15px;
+    }
+
+    .awards .header .awarder {
+      font-size: 15px;
+      font-weight: lighter;
+    }
+
+    .awards .summary {
+      font-size: 14px;
+    }
+
+    .certificates .name {
+      font-size: 15px;
+    }
+
+    .certificates .issuer {
+      font-size: 15px;
+      font-weight: lighter;
+    }
+
+    .skills .section-title {
+      margin: 0;
+    }
+
+    .skills .container {
+      display: block;
+      columns: 2;
+      column-gap: 10px;
+    }
+
+    .skills .container .article {
+      break-inside: avoid-column;
+      min-width: 120px;
+      padding-top: 20px;
+    }
+
+    .skills .container .article span {
+      display: block;
+      font-size: 18px;
+      font-weight: lighter;
+    }
+
+    .skills .container .article li {
+      font-size: 14px;
+      list-style: none;
+    }
+
+    .languages ul {
+      list-style: none;
+    }
+
+    .languages ul li {
+      font-size: 14px;
+    }
+
+
+    .interests .section-title {
+      margin: 0;
+    }
+
+    .interests .container {
+      display: block;
+      columns: 2;
+      column-gap: 10px;
+    }
+
+    .interests .container .article {
+      break-inside: avoid-column;
+      min-width: 120px;
+      padding-top: 20px;
+    }
+
+    .interests .container .article span {
+      display: block;
+      font-size: 18px;
+      font-weight: lighter;
+    }
+
+    .interests .container .article li {
+      font-size: 14px;
+      list-style: none;
+    }
+
+    .references .name {
+      font-size: 15px;
+    }
+
+    .references q {
+      font-size: 14.5px;
+      font-weight: lighter;
+      font-style: italic;
+    }
+  </style>
+  <title>Richard Hendriks – Programmer</title>
+</head>
+
+<body>
+  <div class="content">
+    <div class="basics">
+      <div class="table padding-container-2">
+        <div class="main">
+          <span class="name">Richard Hendriks</span>
+          <span class="label">Programmer</span>
+        </div>
+        <div class="side">
+          <ul class="contact">
+            <li>(912) 555-4321</li>
+            <li>richard.hendriks@mail.com</li>
+            <li class="margin-text-5">San Francisco, California, US</li>
+          </ul>
+        </div>
+      </div>
+      <div class="summary markdown padding-container-2">
+        <p>Richard hails from Tulsa. He has earned degrees from the University of Oklahoma and Stanford. (Go Sooners and Cardinal!) Before starting Pied Piper, he worked for Hooli as a part time software developer. While his work focuses on applied information theory, mostly optimizing lossless compression schema of both the length-limited and adaptive variants, his non-work interests range widely, everything from quantum computing to chaos theory. He could tell you about it, but THAT would NOT be a “length-limited” conversation!</p>
+
+      </div>
+    </div>
+    <div class="table">
+      <div class="main">
+        <div class="work margin-container-3">
+          <p class="section-title no-alone-2">Work</p>
+          <div class="container">
+            <div class="article margin-container-3">
+              <div class="header no-alone-1">
+                <div class="table">
+                  <div class="left">
+                    <span class="title">CEO/President</span>
+                    <span class="subtitle margin-text-1">
+                      <a href="http://piedpiper.example.com">Pied Piper</a> · Palo Alto, CA
+                    </span>
+                  </div>
+                  <div class="right">
+                    <span class="date">2013-12-01 – 2014-12-01</span>
+                  </div>
+                </div>
+              </div>
+              <div class="summary markdown margin-text-4">
+                <p>Pied Piper is a multi-platform technology based on a proprietary universal compression algorithm that has consistently fielded high Weisman Scores™ that are not merely competitive, but approach the theoretical limit of lossless compression.</p>
+
+              </div>
+              <ul class="highlights margin-text-4 no-break">
+                <li>Build an algorithm for artist to detect if their music was violating copy right infringement laws</li>
+                <li>Successfully won Techcrunch Disrupt</li>
+                <li>Optimized an algorithm that holds the current world record for Weisman Scores</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="projects margin-container-3">
+          <p class="section-title no-alone-2">Projects</p>
+          <div class="container">
+            <div class="article margin-container-3">
+              <div class="header no-alone-1">
+                <div class="table">
+                  <div class="left">
+                    <span class="title">Team lead, Designer</span>
+                    <span class="subtitle margin-text-1">
+                      <a href="missdirection.example.com">Miss Direction</a>
+                    </span>
+                  </div>
+                  <div class="right">
+                    <span class="date">2016-08-24 – 2016-08-24</span>
+                  </div>
+                </div>
+              </div>
+              <div class="summary markdown margin-text-4">
+                <p>A mapping engine that misguides you</p>
+
+              </div>
+              <ul class="highlights margin-text-4 no-break">
+                <li>Won award at AIHacks 2016</li>
+                <li>Built by all women team of newbie programmers</li>
+                <li>Using modern technologies such as GoogleMaps, Chrome Extension and Javascript</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="publications margin-container-3">
+          <p class="section-title no-alone-2">Publications</p>
+          <div class="container">
+            <div class="article margin-container-3">
+              <div class="header no-alone-1">
+                <div class="table">
+                  <div class="left">
+                    <span class="title">
+                      <a href="http://en.wikipedia.org/wiki/Silicon_Valley_(TV_series)">Video compression for 3d media</a>
+                    </span>
+                    <span class="subtitle margin-text-1">Hooli</span>
+                  </div>
+                  <div class="right">
+                    <span class="date">2014-10-01</span>
+                  </div>
+                </div>
+              </div>
+              <div class="summary markdown margin-text-4">
+                <p>Innovative middle-out compression algorithm that changes the way we store data.</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="volunteer margin-container-3">
+          <p class="section-title no-alone-2">Volunteer</p>
+          <div class="container">
+            <div class="article margin-container-3">
+              <div class="header no-alone-1">
+                <div class="table">
+                  <div class="left">
+                    <span class="title">Teacher</span>
+                    <span class="subtitle margin-text-1">
+                      <a href="http://coderdojo.example.com/">CoderDojo</a>
+                    </span>
+                  </div>
+                  <div class="right">
+                    <span class="date">2012-01-01 – 2013-01-01</span>
+                  </div>
+                </div>
+              </div>
+              <div class="summary markdown margin-text-4">
+                <p>Global movement of free coding clubs for young people.</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="side">
+        <div class="skills margin-container-3">
+          <p class="section-title no-alone-1">Skills</p>
+          <div class="container">
+            <div class="article no-break">
+              <span>Web Development</span>
+              <ul class="margin-text-2">
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>Javascript</li>
+              </ul>
+            </div>
+            <div class="article no-break">
+              <span>Compression</span>
+              <ul class="margin-text-2">
+                <li>Mpeg</li>
+                <li>MP4</li>
+                <li>GIF</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="education margin-container-3">
+          <p class="section-title no-alone-1">Education</p>
+          <div class="container">
+            <div class="article margin-container-2 no-break">
+              <div class="title markdown">
+                <p>Bachelor, Information Technology</p>
+
+              </div>
+              <span class="institution margin-text-2">
+                <a href="https://www.ou.edu/">University of Oklahoma</a>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="awards margin-container-3">
+          <p class="section-title no-alone-1">Awards</p>
+          <div class="container">
+            <div class="article margin-container-2 no-break">
+              <div class="header">
+                <span class="title">Digital Compression Pioneer Award</span>
+                <span class="awarder margin-text-2">Techcrunch</span>
+              </div>
+              <div class="summary markdown margin-text-3">
+                <p>There is no spoon.</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="references margin-container-3">
+          <p class="section-title no-alone-2">References</p>
+          <div class="container">
+            <div class="article margin-container-2 no-break">
+              <span class="name">Erlich Bachman</span>
+              <q class="margin-text-2">It is my pleasure to recommend Richard, his performance working as a consultant for Main St. Company proved that he will be a valuable addition to any company.</q>
+            </div>
+          </div>
+        </div>
+        <div class="languages margin-container-3 no-break">
+          <p class="section-title no-alone-1">Languages</p>
+          <div class="container">
+            <ul>
+              <li class="article margin-text-2">English · Native speaker</li>
+            </ul>
+          </div>
+        </div>
+        <div class="interests margin-container-3">
+          <p class="section-title no-alone-1">Interests</p>
+          <div class="container">
+            <div class="article no-break">
+              <span>Wildlife</span>
+              <ul class="margin-text-2">
+                <li>Ferrets</li>
+                <li>Unicorns</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="links margin-container-3 no-break">
+          <p class="section-title no-alone-1">Profiles</p>
+          <div class="container">
+            <ul>
+              <li class="article">
+                <a href="http://richardhendricks.example.com">http://richardhendricks.example.com</a>
+              </li>
+              <li class="article margin-text-4">
+                <a href=""></a>
+              </li>
+              <li class="article margin-text-4">
+                <a href="https://soundcloud.example.com/dandymusicnl">soundcloud.example.com/dandymusicnl</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

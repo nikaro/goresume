@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>goresume</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">goresume</h1>
+</header>
+<p>Build HTML/PDF resume from JSON/YAML/TOML</p>
+<h2 id="installation">Installation</h2>
+<pre><code># with Go
+go install github.com/nikaro/goresume@latest
+
+# with Homebrew
+brew install nikaro/tap/goresume
+
+# on ArchLinux from AUR
+yay -S goresume-bin</code></pre>
+<p>You can also download one of the binaries or packages from the <a
+href="https://github.com/nikaro/goresume/releases">Releases</a>
+page.</p>
+<h2 id="usage">Usage</h2>
+<pre><code>&gt; goresume --help
+Resume Builder
+
+Usage:
+  goresume [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  export      Export resume to HTML/PDF
+  help        Help about any command
+  validate    Validate resume against schema
+
+Flags:
+  -h, --help               help for goresume
+  -l, --log-level string   logging level (default &quot;warn&quot;)
+  -r, --resume string      path to the resume (default &quot;resume.json&quot;)
+  -v, --version            version for goresume
+
+Use &quot;goresume [command] --help&quot; for more information about a command.</code></pre>
+<h3 id="examples">Examples</h3>
+<p>Export <code>resume.json</code> to <code>resume.html</code> and
+<code>resume.pdf</code>:</p>
+<pre><code>goresume export</code></pre>
+<p>Use a custom theme for PDF output:</p>
+<pre><code>goresume export --pdf-theme actual</code></pre>
+<p>Export HTML to stdout:</p>
+<pre><code>goresume export --html-output -</code></pre>
+<h2 id="themes">Themes</h2>
+<h3 id="embeded">Embeded</h3>
+<p>goresume comes with a few embeded themes:</p>
+<ul>
+<li>simple: <a
+href="https://nikaro.github.io/goresume/simple.html">HTML</a></li>
+<li>simple-compact: <a
+href="https://nikaro.github.io/goresume/simple-compact.html">HTML</a></li>
+<li>actual: <a
+href="https://nikaro.github.io/goresume/actual.html">HTML</a> • <a
+href="https://nikaro.github.io/goresume/actual.pdf">PDF</a></li>
+</ul>
+<h3 id="custom">Custom</h3>
+<p>You can also use your own themes, by creating a
+<code>themes/my-theme.html</code> file next to your
+<code>resume.json</code>. goresume use <a
+href="https://pkg.go.dev/text/template">Go template engine</a> augmented
+with <a href="https://docs.atom.codes/sprout">sprout functions</a>.</p>
+</body>
+</html>
