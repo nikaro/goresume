@@ -13,7 +13,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/log"
-	"github.com/go-sprout/sprout"
+	"github.com/go-sprout/sprout/sprigin"
 	"github.com/gomarkdown/markdown"
 	"github.com/kataras/i18n"
 	"github.com/playwright-community/playwright-go"
@@ -169,7 +169,7 @@ func getTemplate(theme string) *bytes.Buffer {
 		}
 	}()
 	templates, errTemplate := template.New("html").
-		Funcs(sprout.FuncMap()).
+		Funcs(sprigin.FuncMap()).
 		Funcs(templatesFn).
 		Parse(themeTemplate)
 	check(errTemplate)
