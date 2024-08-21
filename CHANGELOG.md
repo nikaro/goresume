@@ -1,3 +1,14 @@
+## 0.3.13 (2024-08-21)
+
+### Fix
+
+- **deps**: update go to 1.23
+- **deps**: update dependency go to v1.22.6 (#134)
+- **deps**: update github.com/gomarkdown/markdown digest to 034f12a (#131)
+- **deps**: update github.com/gomarkdown/markdown digest to afa4a46 (#129)
+- **deps**: update module github.com/playwright-community/playwright-go to v0.4501.1 (#127)
+- **deps**: update go packages (#126)
+
 ## 0.3.12 (2024-07-03)
 
 ### Fix
