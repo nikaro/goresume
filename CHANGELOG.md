@@ -1,3 +1,9 @@
+## 0.3.14 (2024-09-11)
+
+### Fix
+
+- **deps**: bump github.com/playwright-community/playwright-go (#139)
+
 ## 0.3.13 (2024-08-21)
 
 ### Fix
