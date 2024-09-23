@@ -4,7 +4,7 @@ go 1.23.0
 
 require (
 	github.com/charmbracelet/log v0.4.0
-	github.com/go-sprout/sprout v0.5.1
+	github.com/go-sprout/sprout v0.6.0
 	github.com/gomarkdown/markdown v0.0.0-20240730141124-034f12af3bf6
 	github.com/kataras/i18n v0.0.8
 	github.com/playwright-community/playwright-go v0.4701.0

@@ -29,8 +29,8 @@ github.com/go-jose/go-jose/v3 v3.0.3 h1:fFKWeig/irsp7XD2zBxvnmA/XaRWp5V3CBsZXJF7
 github.com/go-jose/go-jose/v3 v3.0.3/go.mod h1:5b+7YgP7ZICgJDBdfjZaIt+H/9L9T/YQrVfLAMboGkQ=
 github.com/go-logfmt/logfmt v0.6.0 h1:wGYYu3uicYdqXVgoYbvnkrPVXkuLM1p1ifugDMEdRi4=
 github.com/go-logfmt/logfmt v0.6.0/go.mod h1:WYhtIu8zTZfxdn5+rREduYbwxfcBr/Vr6KEVveWlfTs=
-github.com/go-sprout/sprout v0.5.1 h1:/9hcxDzq7YOWcOvWMW4Ghob5hw6CWoD3sVuk3FDGOgQ=
-github.com/go-sprout/sprout v0.5.1/go.mod h1:P6ETppcGn1BR0HZ8r+660aP2hJH7xiamIGiWjA+AE4o=
+github.com/go-sprout/sprout v0.6.0 h1:YIcSYNKjFFMORcjts5/N6S0toNcJiX1cbXi619qVjA0=
+github.com/go-sprout/sprout v0.6.0/go.mod h1:P6ETppcGn1BR0HZ8r+660aP2hJH7xiamIGiWjA+AE4o=
 github.com/go-stack/stack v1.8.1 h1:ntEHSVwIt7PNXNpgPmVfMrNhLtgjlmnZha2kOpuRiDw=
 github.com/go-stack/stack v1.8.1/go.mod h1:dcoOX6HbPZSZptuspn9bctJ+N/CnF5gGygcUP3XYfe4=
 github.com/gomarkdown/markdown v0.0.0-20240730141124-034f12af3bf6 h1:ZPy+2XJ8u0bB3sNFi+I72gMEMS7MTg7aZCCXPOjV8iw=
