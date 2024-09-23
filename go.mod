@@ -7,7 +7,7 @@ require (
 	github.com/go-sprout/sprout v0.5.1
 	github.com/gomarkdown/markdown v0.0.0-20240730141124-034f12af3bf6
 	github.com/kataras/i18n v0.0.8
-	github.com/playwright-community/playwright-go v0.4700.0
+	github.com/playwright-community/playwright-go v0.4701.0
 	github.com/samber/lo v1.47.0
 	github.com/santhosh-tekuri/jsonschema/v6 v6.0.1
 	github.com/spf13/cobra v1.8.1
