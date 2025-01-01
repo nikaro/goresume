@@ -1,3 +1,9 @@
+## 0.3.18 (2025-01-01)
+
+### Fix
+
+- **deps**: update module golang.org/x/net to v0.33.0 [security]
+
 ## 0.3.17 (2024-12-18)
 
 ### Fix
