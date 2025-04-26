@@ -224,7 +224,7 @@ var templatesFn template.FuncMap = template.FuncMap{
 		var locales fs.FS
 		var localesSrc string
 		if _, err := os.Stat("locales"); !errors.Is(err, fs.ErrNotExist) {
-			locales, _ = fs.Sub(os.DirFS("."), "locales")
+			locales = os.DirFS(filepath.Join(".", "locales"))
 			localesSrc = "local"
 		} else {
 			locales = defaultLocales
@@ -235,9 +235,6 @@ var templatesFn template.FuncMap = template.FuncMap{
 				func() (filenames []string) {
 					errWalk := fs.WalkDir(locales, ".", func(path string, d fs.DirEntry, err error) error {
 						if err == nil && !d.IsDir() {
-							if localesSrc == "local" {
-								path = filepath.Join("locales", path)
-							}
 							filenames = append(filenames, path)
 						}
 						return err
@@ -246,7 +243,15 @@ var templatesFn template.FuncMap = template.FuncMap{
 					log.Debug("locales", "from", localesSrc, "files", filenames)
 					return filenames
 				},
-				defaultLocales.ReadFile,
+				func(name string) ([]byte, error) {
+					if localesSrc == "local" {
+						return fs.ReadFile(locales, name)
+					} else if localesSrc == "embed" {
+						return defaultLocales.ReadFile(name)
+					} else {
+						return nil, errors.New("invalid locales source")
+					}
+				},
 			)
 		}
 		locale, errLocale := i18n.New(i18nAssets, viper.GetString("meta.lang"))
